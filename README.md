@@ -160,7 +160,7 @@ Uygulama, her kullanım senaryosu için uluslararası standartlara (RFC formatla
 Modüler, bakımı kolay ve profesyonel endüstri standartlarına uygun mimari:
 
 ```bash
-QR-Code-Creater/
+QR-CODE-STUDYOSU/
 ├── assets/                       # Statik medya ve grafik kaynakları
 │   ├── favicon/                  # Çoklu çözünürlükte modern favicon setleri
 │   │   ├── apple-touch-icon.png  # Apple iOS ana ekran ikonu (180x180)
@@ -215,10 +215,10 @@ Terminal veya komut istemcisinde depoyu klonlayın:
 
 ```powershell
 # Depoyu klonlayın
-git clone https://github.com/DarkRebelss/QR-Code-Creater.git
+git clone https://github.com/DarkRebelss/QR-CODE-STUDYOSU.git
 
 # Proje dizinine geçin
-cd QR-Code-Creater
+cd QR-CODE-STUDYOSU
 ```
 
 ---
@@ -458,7 +458,7 @@ All outputs adhere strictly to international standards and RFC specifications:
 ## 📂 Project Directory Structure
 
 ```bash
-QR-Code-Creater/
+QR-CODE-STUDYOSU/
 ├── assets/                       # Static media and graphics
 │   ├── favicon/                  # Multi-resolution favicon package
 │   │   ├── apple-touch-icon.png  # iOS Home screen icon (180x180)
@@ -510,8 +510,8 @@ QR-Code-Creater/
 ### 2. Clone Repository
 
 ```powershell
-git clone https://github.com/DarkRebelss/QR-Code-Creater.git
-cd QR-Code-Creater
+git clone https://github.com/DarkRebelss/QR-CODE-STUDYOSU.git
+cd QR-CODE-STUDYOSU
 ```
 
 ---
