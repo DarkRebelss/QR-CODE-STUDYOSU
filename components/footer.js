@@ -68,10 +68,10 @@ class CustomFooter extends HTMLElement {
                 </button>
               </li>
               <li>
-                <button type="button" class="open-legal-modal text-slate-400 hover:text-indigo-400 flex items-center gap-2 transition-colors text-left py-0.5" data-modal="contact">
-                  <i data-feather="mail" class="w-4 h-4 text-indigo-400"></i>
-                  <span>İletişim & Geri Bildirim</span>
-                </button>
+                <a href="https://github.com/DarkRebelss" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-indigo-400 flex items-center gap-2 transition-colors text-left py-0.5" title="DarkRebelss GitHub">
+                  <i data-feather="github" class="w-4 h-4 text-indigo-400"></i>
+                  <span>GitHub</span>
+                </a>
               </li>
             </ul>
           </div>
@@ -94,10 +94,10 @@ class CustomFooter extends HTMLElement {
                 <span>Şartlar</span>
               </button>
               <span class="text-slate-700">•</span>
-              <button type="button" class="open-legal-modal text-slate-400 hover:text-indigo-400 flex items-center gap-1.5 transition" data-modal="contact">
-                <i data-feather="mail" class="w-3.5 h-3.5 text-indigo-400"></i>
-                <span>İletişim</span>
-              </button>
+              <a href="https://github.com/DarkRebelss" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-indigo-400 flex items-center gap-1.5 transition" title="DarkRebelss GitHub">
+                <i data-feather="github" class="w-3.5 h-3.5 text-indigo-400"></i>
+                <span>GitHub</span>
+              </a>
             </div>
           </div>
         </div>

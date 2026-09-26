@@ -1370,101 +1370,201 @@
     <!-- Custom Web Component Footer -->
     <custom-footer></custom-footer>
 
-    <!-- LEGAL & CONTACT MODALS -->
-    <!-- Privacy Modal -->
+    <!-- LEGAL MODALS -->
+    <!-- Privacy Modal (Gizlilik & KVKK) -->
     <div id="modal-privacy" class="modal-backdrop">
-        <div
-            class="modal-dialog p-6 max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl text-slate-200">
-            <div class="flex justify-between items-center pb-3 mb-3 border-b border-slate-800">
-                <h3 class="font-bold text-base flex items-center gap-2 text-white">
-                    <i data-feather="shield" class="w-4 h-4 text-indigo-400"></i>
-                    <span>Gizlilik ve KVKK Politikası</span>
-                </h3>
-                <button type="button"
-                    class="close-modal-btn p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition">
-                    <i data-feather="x" class="w-4 h-4"></i>
+        <div class="modal-dialog">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-slate-800 bg-slate-900/80 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                        <i data-feather="shield" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-base text-white flex items-center gap-2">
+                            <span>Gizlilik ve KVKK Politikası</span>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Güvenli</span>
+                        </h3>
+                        <p class="text-xs text-slate-400">Son Güncelleme: 2026 • %100 İstemci Taraflı Koruma</p>
+                    </div>
+                </div>
+                <button type="button" class="close-modal-btn p-2 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition">
+                    <i data-feather="x" class="w-5 h-5"></i>
                 </button>
             </div>
-            <div class="space-y-3 text-xs sm:text-sm text-slate-300 leading-relaxed">
-                <p><strong>QR Kod Stüdyosu</strong> olarak kullanıcılarımızın gizliliğine en üst düzeyde önem veriyoruz.
-                </p>
-                <h4 class="font-bold text-white text-xs uppercase tracking-wider">1. Sıfır Veri Depolama</h4>
-                <p>Oluşturduğunuz veya taradığınız hiçbir veri sunucularımıza gitmez. Tüm algoritmalar doğrudan
-                    tarayıcınızda istemci taraflı çalışır.</p>
-                <h4 class="font-bold text-white text-xs uppercase tracking-wider">2. Yerel Depolama (LocalStorage)</h4>
-                <p>Geçmiş yalnızca sizin cihazınızda saklanır ve dilediğiniz zaman tek tıkla tamamen temizlenebilir.</p>
+
+            <!-- Modal Body (Scrollable) -->
+            <div class="modal-body p-6 space-y-3.5 text-xs sm:text-sm text-slate-300 leading-relaxed">
+                <!-- Highlight Banner -->
+                <div class="p-3.5 rounded-xl bg-gradient-to-r from-emerald-950/40 to-slate-900 border border-emerald-500/20 text-slate-200">
+                    <div class="flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase tracking-wider mb-1">
+                        <i data-feather="check-circle" class="w-4 h-4"></i>
+                        <span>Sıfır Sunucu Depolaması & Tam Gizlilik</span>
+                    </div>
+                    <p class="text-xs text-slate-300">
+                        QR Kod Stüdyosu, tüm kodlama ve tarama işlemlerini doğrudan cihazınızın tarayıcısında (%100 client-side) yürütür. Girdiğiniz veya taradığınız hiçbir veri harici sunucularımıza gitmez, kaydedilmez veya izlenmez.
+                    </p>
+                </div>
+
+                <!-- Section 1 -->
+                <div class="legal-section-card">
+                    <h4 class="font-bold text-white text-xs uppercase tracking-wider mb-1 flex items-center gap-2">
+                        <i data-feather="lock" class="w-3.5 h-3.5 text-indigo-400"></i>
+                        <span>1. İstemci Taraflı (Client-Side) Çalışma İlkesi</span>
+                    </h4>
+                    <p class="text-slate-400 text-xs">
+                        URL, düz metin, Wi-Fi ağ parolası, vCard kartvizit bilgileri, WhatsApp veya e-posta taslakları hiçbir harici bulut sistemine iletilmez. Tüm QR matris hesaplamaları ve görsel render işlemleri cihazınızın kendi tarayıcı işlemcisi tarafından yerel olarak gerçekleştirilir.
+                    </p>
+                </div>
+
+                <!-- Section 2 -->
+                <div class="legal-section-card">
+                    <h4 class="font-bold text-white text-xs uppercase tracking-wider mb-1 flex items-center gap-2">
+                        <i data-feather="camera" class="w-3.5 h-3.5 text-indigo-400"></i>
+                        <span>2. Kamera ve Görüntü İşleme İzinleri</span>
+                    </h4>
+                    <p class="text-slate-400 text-xs">
+                        Dahili QR Tarayıcı, yalnızca canlı kareleri anlık analiz etmek için tarayıcınızın standart <code class="text-indigo-300">navigator.mediaDevices.getUserMedia</code> API'sini kullanır. Kamera akışınız sunuculara aktarılmaz veya kaydedilmez. Görseldeki QR kod çözüldüğü anda video kareleri bellekten otomatik olarak temizlenir.
+                    </p>
+                </div>
+
+                <!-- Section 3 -->
+                <div class="legal-section-card">
+                    <h4 class="font-bold text-white text-xs uppercase tracking-wider mb-1 flex items-center gap-2">
+                        <i data-feather="database" class="w-3.5 h-3.5 text-indigo-400"></i>
+                        <span>3. Tarayıcı Yerel Hafızası (LocalStorage)</span>
+                    </h4>
+                    <p class="text-slate-400 text-xs">
+                        "Geçmiş" sekmesinde yer alan son tasarımlarınız yalnızca sizin bilgisayarınızın yerel tarayıcı belleğinde (<code class="text-indigo-300">localStorage</code>) saklanır. Üçüncü tarafların bu verilere erişimi mümkün değildir ve dilediğiniz zaman "Geçmişi Temizle" butonuyla tüm kayıtları tek tıkla silebilirsiniz.
+                    </p>
+                </div>
+
+                <!-- Section 4 -->
+                <div class="legal-section-card">
+                    <h4 class="font-bold text-white text-xs uppercase tracking-wider mb-1 flex items-center gap-2">
+                        <i data-feather="eye-off" class="w-3.5 h-3.5 text-indigo-400"></i>
+                        <span>4. Çerezler ve Takip Kodları (Trackers)</span>
+                    </h4>
+                    <p class="text-slate-400 text-xs">
+                        Sitemizde kullanıcı davranışlarını izleyen profilleme çerezleri, üçüncü taraf reklam kodları veya kişisel veri toplayıcı pikseller kesinlikle yer almaz.
+                    </p>
+                </div>
+
+                <!-- Section 5 -->
+                <div class="legal-section-card">
+                    <h4 class="font-bold text-white text-xs uppercase tracking-wider mb-1 flex items-center gap-2">
+                        <i data-feather="file-check" class="w-3.5 h-3.5 text-indigo-400"></i>
+                        <span>5. KVKK ve GDPR Uyumluluğu</span>
+                    </h4>
+                    <p class="text-slate-400 text-xs">
+                        6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) ve AB Genel Veri Koruma Tüzüğü (GDPR) kapsamında, platform üzerinde merkezi olarak hiçbir kişisel veri toplanmamakta, depolanmamakta ve işlenmemektedir. Veri kontrolü %100 kullanıcının kendi tasarrufundadır.
+                    </p>
+                </div>
             </div>
-            <div class="mt-6 pt-3 border-t border-slate-800 flex justify-end">
-                <button type="button"
-                    class="close-modal-btn px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/30 transition">Kapat</button>
+
+            <!-- Modal Footer -->
+            <div class="px-6 py-3.5 border-t border-slate-800 bg-slate-900/80 flex items-center justify-between">
+                <a href="https://github.com/DarkRebelss" target="_blank" rel="noopener noreferrer" class="text-xs text-slate-400 hover:text-indigo-400 flex items-center gap-1.5 transition">
+                    <i data-feather="github" class="w-3.5 h-3.5 text-indigo-400"></i>
+                    <span>DarkRebelss</span>
+                </a>
+                <button type="button" class="close-modal-btn px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/30 transition">
+                    Anladım & Kapat
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Terms Modal -->
+    <!-- Terms Modal (Kullanım Şartları) -->
     <div id="modal-terms" class="modal-backdrop">
-        <div
-            class="modal-dialog p-6 max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl text-slate-200">
-            <div class="flex justify-between items-center pb-3 mb-3 border-b border-slate-800">
-                <h3 class="font-bold text-base flex items-center gap-2 text-white">
-                    <i data-feather="file-text" class="w-4 h-4 text-indigo-400"></i>
-                    <span>Kullanım Şartları</span>
-                </h3>
-                <button type="button"
-                    class="close-modal-btn p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition">
-                    <i data-feather="x" class="w-4 h-4"></i>
+        <div class="modal-dialog">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-slate-800 bg-slate-900/80 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0">
+                        <i data-feather="file-text" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-base text-white flex items-center gap-2">
+                            <span>Kullanım Şartları & Lisans</span>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">Açık Kaynak</span>
+                        </h3>
+                        <p class="text-xs text-slate-400">Son Güncelleme: 2026 • MIT Lisansı</p>
+                    </div>
+                </div>
+                <button type="button" class="close-modal-btn p-2 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition">
+                    <i data-feather="x" class="w-5 h-5"></i>
                 </button>
             </div>
-            <div class="space-y-3 text-xs sm:text-sm text-slate-300 leading-relaxed">
-                <p>Uygulama kişisel ve ticari amaçlarla tamamen ücretsiz olarak kullanılabilir.</p>
-                <p>Oluşturulan QR kodların yönlendirdiği içeriklerin yasal sorumluluğu ve doğruluğu kullanıcıya aittir.
-                </p>
-            </div>
-            <div class="mt-6 pt-3 border-t border-slate-800 flex justify-end">
-                <button type="button"
-                    class="close-modal-btn px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/30 transition">Kabul
-                    Ediyorum</button>
-            </div>
-        </div>
-    </div>
 
-    <!-- Contact Modal -->
-    <div id="modal-contact" class="modal-backdrop">
-        <div
-            class="modal-dialog p-6 max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl text-slate-200">
-            <div class="flex justify-between items-center pb-3 mb-3 border-b border-slate-800">
-                <h3 class="font-bold text-base flex items-center gap-2 text-white">
-                    <i data-feather="mail" class="w-4 h-4 text-indigo-400"></i>
-                    <span>İletişim & Geri Bildirim</span>
-                </h3>
-                <button type="button"
-                    class="close-modal-btn p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition">
-                    <i data-feather="x" class="w-4 h-4"></i>
+            <!-- Modal Body (Scrollable) -->
+            <div class="modal-body p-6 space-y-3.5 text-xs sm:text-sm text-slate-300 leading-relaxed">
+                <!-- Highlight Banner -->
+                <div class="p-3.5 rounded-xl bg-gradient-to-r from-indigo-950/40 to-slate-900 border border-indigo-500/20 text-slate-200">
+                    <div class="flex items-center gap-2 text-indigo-400 font-bold text-xs uppercase tracking-wider mb-1">
+                        <i data-feather="check-circle" class="w-4 h-4"></i>
+                        <span>Özgür, Açık Kaynak & Ticari Kullanıma Uygun</span>
+                    </div>
+                    <p class="text-xs text-slate-300">
+                        QR Kod Stüdyosu, açık kaynak kodlu ve ücretsiz bir projedir. Kişisel, akademik veya ticari tüm projelerinizde sınırsız olarak kod üretebilir, indirebilir ve kullanabilirsiniz.
+                    </p>
+                </div>
+
+                <!-- Section 1 -->
+                <div class="legal-section-card">
+                    <h4 class="font-bold text-white text-xs uppercase tracking-wider mb-1 flex items-center gap-2">
+                        <i data-feather="award" class="w-3.5 h-3.5 text-indigo-400"></i>
+                        <span>1. Kullanım Kapsamı ve Lisans</span>
+                    </h4>
+                    <p class="text-slate-400 text-xs">
+                        Bu platform üzerinden üretilen tüm QR kodlar (vektörel SVG ve yüksek çözünürlüklü PNG/JPEG dosyaları dahil) ticari reklam panolarında, web sitelerinde, broşürlerde veya ürün ambalajlarında hiçbir lisans ücreti olmadan serbestçe kullanılabilir.
+                    </p>
+                </div>
+
+                <!-- Section 2 -->
+                <div class="legal-section-card">
+                    <h4 class="font-bold text-white text-xs uppercase tracking-wider mb-1 flex items-center gap-2">
+                        <i data-feather="alert-triangle" class="w-3.5 h-3.5 text-indigo-400"></i>
+                        <span>2. İçerik ve Yasal Sorumluluk</span>
+                    </h4>
+                    <p class="text-slate-400 text-xs">
+                        Oluşturulan QR kodların yönlendirdiği bağlantıların ve içeriklerin hukuka uygunluğu tamamen kullanıcıya aittir. Kötü amaçlı yazılım (malware), kimlik avı (phishing) veya yürürlükteki kanunlara aykırı içerik yaymak amacıyla kod üretilmesi yasaktır.
+                    </p>
+                </div>
+
+                <!-- Section 3 -->
+                <div class="legal-section-card">
+                    <h4 class="font-bold text-white text-xs uppercase tracking-wider mb-1 flex items-center gap-2">
+                        <i data-feather="cpu" class="w-3.5 h-3.5 text-indigo-400"></i>
+                        <span>3. Fikri Mülkiyet ve Çıktı Hakları</span>
+                    </h4>
+                    <p class="text-slate-400 text-xs">
+                        Kullanıcının kendi verileriyle oluşturduğu QR kodlar üzerindeki tüm telif ve fikri haklar kullanıcıya aittir. Platformumuz veya geliştiricisi üretilen tasarımlar üzerinde herhangi bir hak iddia etmez.
+                    </p>
+                </div>
+
+                <!-- Section 4 -->
+                <div class="legal-section-card">
+                    <h4 class="font-bold text-white text-xs uppercase tracking-wider mb-1 flex items-center gap-2">
+                        <i data-feather="help-circle" class="w-3.5 h-3.5 text-indigo-400"></i>
+                        <span>4. Sorumluluk Reddi (Garanti Feragati)</span>
+                    </h4>
+                    <p class="text-slate-400 text-xs">
+                        Yazılım "olduğu gibi" (AS-IS) sunulmaktadır. Tarayıcı güncellemeleri, donanım uyumsuzlukları veya kamera donanımından kaynaklanabilecek teknik aksaklıklardan dolayı geliştirici sorumlu tutulamaz.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-6 py-3.5 border-t border-slate-800 bg-slate-900/80 flex items-center justify-between">
+                <a href="https://github.com/DarkRebelss" target="_blank" rel="noopener noreferrer" class="text-xs text-slate-400 hover:text-indigo-400 flex items-center gap-1.5 transition">
+                    <i data-feather="github" class="w-3.5 h-3.5 text-indigo-400"></i>
+                    <span>DarkRebelss</span>
+                </a>
+                <button type="button" class="close-modal-btn px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/30 transition">
+                    Kabul Ediyorum & Kapat
                 </button>
             </div>
-            <form id="contactForm" class="space-y-3 text-xs sm:text-sm">
-                <div>
-                    <label for="contact-name" class="block font-bold mb-1.5 text-slate-300">Adınız</label>
-                    <input type="text" id="contact-name" required placeholder="Adınız Soyadınız"
-                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-800 text-white placeholder-slate-500 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
-                </div>
-                <div>
-                    <label for="contact-email" class="block font-bold mb-1.5 text-slate-300">E-Posta</label>
-                    <input type="email" id="contact-email" required placeholder="adiniz@ornek.com"
-                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-800 text-white placeholder-slate-500 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
-                </div>
-                <div>
-                    <label for="contact-message" class="block font-bold mb-1.5 text-slate-300">Mesajınız</label>
-                    <textarea id="contact-message" rows="3" required placeholder="Görüş ve önerileriniz..."
-                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-800 text-white placeholder-slate-500 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none transition"></textarea>
-                </div>
-                <div class="flex justify-end gap-2.5 pt-2">
-                    <button type="button"
-                        class="close-modal-btn px-4 py-2 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 font-semibold transition">Vazgeç</button>
-                    <button type="submit"
-                        class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold shadow-md shadow-indigo-600/30 transition">Gönder</button>
-                </div>
-            </form>
         </div>
     </div>
 

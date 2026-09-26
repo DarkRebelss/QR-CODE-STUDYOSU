@@ -606,3 +606,28 @@ html.dark .dropzone {
     transform: rotate(180deg);
     color: #818cf8;
 }
+
+/* ===== PRINT STYLES ===== */
+@media print {
+    @page {
+        margin: 15mm;
+        size: auto;
+    }
+    body {
+        background: #ffffff !important;
+        color: #000000 !important;
+    }
+    nav, header, footer, custom-footer, .modal-backdrop, #toast-container,
+    #generatorTabs, #generator-tabs-nav, .tab-pane, #historySection, #faq, #features, #how,
+    button, .btn, input, select, textarea, .sub-tab-btn {
+        display: none !important;
+    }
+    #previewBox, #qrCanvasContainer, #qrCanvasContainer canvas {
+        display: block !important;
+        visibility: visible !important;
+        margin: 0 auto !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+}
+

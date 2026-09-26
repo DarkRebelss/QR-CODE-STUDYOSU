@@ -5,27 +5,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const app = window.QRApp;
     const els = app.els;
 
-    if (els.scanTabUpload && els.scanTabCamera) {
-        els.scanTabUpload.addEventListener('click', () => {
-            els.scanTabUpload.classList.add('bg-white', 'dark:bg-slate-800', 'text-indigo-600', 'dark:text-indigo-400', 'shadow-sm');
-            els.scanTabUpload.classList.remove('text-slate-600', 'dark:text-slate-400');
-            els.scanTabCamera.classList.remove('bg-white', 'dark:bg-slate-800', 'text-indigo-600', 'dark:text-indigo-400', 'shadow-sm');
-            els.scanTabCamera.classList.add('text-slate-600', 'dark:text-slate-400');
+    function switchScannerSubTab(mode) {
+        const activeClasses = ['bg-indigo-600', 'text-white', 'shadow-md', 'shadow-indigo-600/30', 'font-bold'];
+        const inactiveClasses = ['text-slate-400', 'hover:text-indigo-400', 'font-semibold'];
+
+        if (mode === 'upload') {
+            els.scanTabUpload.classList.remove(...inactiveClasses, 'text-slate-600', 'dark:text-slate-400', 'bg-white', 'dark:bg-slate-800', 'text-indigo-600', 'dark:text-indigo-400');
+            els.scanTabUpload.classList.add(...activeClasses);
+
+            els.scanTabCamera.classList.remove(...activeClasses, 'bg-white', 'dark:bg-slate-800', 'text-indigo-600', 'dark:text-indigo-400', 'text-slate-600');
+            els.scanTabCamera.classList.add(...inactiveClasses);
 
             els.scannerUploadView.classList.remove('hidden');
             els.scannerCameraView.classList.add('hidden');
             stopCamera();
-        });
+        } else {
+            els.scanTabCamera.classList.remove(...inactiveClasses, 'text-slate-600', 'dark:text-slate-400', 'bg-white', 'dark:bg-slate-800', 'text-indigo-600', 'dark:text-indigo-400');
+            els.scanTabCamera.classList.add(...activeClasses);
 
-        els.scanTabCamera.addEventListener('click', () => {
-            els.scanTabCamera.classList.add('bg-white', 'dark:bg-slate-800', 'text-indigo-600', 'dark:text-indigo-400', 'shadow-sm');
-            els.scanTabCamera.classList.remove('text-slate-600', 'dark:text-slate-400');
-            els.scanTabUpload.classList.remove('bg-white', 'dark:bg-slate-800', 'text-indigo-600', 'dark:text-indigo-400', 'shadow-sm');
-            els.scanTabUpload.classList.add('text-slate-600', 'dark:text-slate-400');
+            els.scanTabUpload.classList.remove(...activeClasses, 'bg-white', 'dark:bg-slate-800', 'text-indigo-600', 'dark:text-indigo-400', 'text-slate-600');
+            els.scanTabUpload.classList.add(...inactiveClasses);
 
             els.scannerCameraView.classList.remove('hidden');
             els.scannerUploadView.classList.add('hidden');
-        });
+        }
+    }
+
+    if (els.scanTabUpload && els.scanTabCamera) {
+        els.scanTabUpload.addEventListener('click', () => switchScannerSubTab('upload'));
+        els.scanTabCamera.addEventListener('click', () => switchScannerSubTab('camera'));
     }
 
     // Image Upload / Drag & Drop Scan

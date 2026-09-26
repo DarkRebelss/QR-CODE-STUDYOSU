@@ -2,8 +2,9 @@
 .modal-backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(15, 23, 42, 0.55);
-    backdrop-filter: blur(4px);
+    background: rgba(2, 6, 23, 0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     z-index: 10000;
     display: flex;
     align-items: center;
@@ -11,7 +12,7 @@
     padding: 16px;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.2s ease;
+    transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .modal-backdrop.is-open {
@@ -20,23 +21,56 @@
 }
 
 .modal-dialog {
-    background: #ffffff;
-    border-radius: 1rem;
-    max-width: 520px;
+    background: #0f172a;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 1.25rem;
+    max-width: 640px;
     width: 100%;
-    max-height: 85vh;
-    overflow-y: auto;
-    box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.25);
-    transform: scale(0.96);
-    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-html.dark .modal-dialog {
-    background: #1e293b;
-    border: 1px solid #334155;
-    color: #f8fafc;
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(99, 102, 241, 0.12);
+    transform: scale(0.95) translateY(10px);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+    overflow: hidden;
 }
 
 .modal-backdrop.is-open .modal-dialog {
-    transform: scale(1);
+    transform: scale(1) translateY(0);
+}
+
+.modal-body {
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(99, 102, 241, 0.3) rgba(15, 23, 42, 0.5);
+}
+
+.modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.5);
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.35);
+    border-radius: 9999px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(99, 102, 241, 0.6);
+}
+
+.legal-section-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(51, 65, 85, 0.6);
+    border-radius: 0.875rem;
+    padding: 1rem 1.125rem;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.legal-section-card:hover {
+    border-color: rgba(99, 102, 241, 0.35);
+    background: rgba(30, 41, 59, 0.45);
 }

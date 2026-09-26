@@ -111,11 +111,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (els.clearHistoryBtn) {
         els.clearHistoryBtn.addEventListener('click', () => {
-            if (confirm('Tüm QR kod geçmişinizi silmek istediğinize emin misiniz?')) {
-                localStorage.removeItem(HISTORY_KEY);
-                renderHistory();
-                showToast('Geçmiş başarıyla temizlendi', 'info');
-            }
+            localStorage.removeItem(HISTORY_KEY);
+            renderHistory();
+            showToast('Geçmiş başarıyla temizlendi', 'info');
         });
     }
 
