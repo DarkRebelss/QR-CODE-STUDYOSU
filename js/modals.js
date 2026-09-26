@@ -6,6 +6,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const modal = document.getElementById(`modal-${modalName}`);
         if (modal) {
             modal.classList.add('is-open');
+            if (window.feather && typeof window.feather.replace === 'function') {
+                window.feather.replace();
+            }
         }
     };
 

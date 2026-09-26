@@ -62,15 +62,4 @@
     background: rgba(99, 102, 241, 0.6);
 }
 
-.legal-section-card {
-    background: rgba(15, 23, 42, 0.6);
-    border: 1px solid rgba(51, 65, 85, 0.6);
-    border-radius: 0.875rem;
-    padding: 1rem 1.125rem;
-    transition: border-color 0.2s ease, background 0.2s ease;
-}
 
-.legal-section-card:hover {
-    border-color: rgba(99, 102, 241, 0.35);
-    background: rgba(30, 41, 59, 0.45);
-}
