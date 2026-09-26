@@ -54,9 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
             switchTopMode('history');
         } else if (hash === '#generator' || hash === '#generatorsection' || hash === '') {
             switchTopMode('generator');
-            const target = document.getElementById('generator') || document.getElementById('generatorSection');
-            if (target && hash !== '') {
-                target.scrollIntoView({ behavior: 'smooth' });
+            if (hash !== '') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
     }
@@ -67,12 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
         a.addEventListener('click', (e) => {
             e.preventDefault();
             switchTopMode('generator');
-            const target = document.getElementById('generator') || document.getElementById('generatorSection');
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            } else {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             try {
                 history.pushState(null, '', '#generator');
             } catch (_) {}

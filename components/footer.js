@@ -122,12 +122,7 @@ class CustomFooter extends HTMLElement {
         if (typeof window.switchTopMode === 'function') {
           window.switchTopMode('generator');
         }
-        const target = document.getElementById('generator') || document.getElementById('generatorSection');
-        if (target) {
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         try {
           history.pushState(null, '', '#generator');
         } catch (_) { }

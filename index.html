@@ -67,7 +67,9 @@
 </head>
 
 <body
-    class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+    class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white relative">
+    <!-- Top-level generator anchor -->
+    <div id="generator" class="absolute top-0 left-0 w-0 h-0 pointer-events-none"></div>
 
     <main class="flex-grow container mx-auto px-4 py-8 md:py-12 max-w-5xl relative">
         <!-- Ambient Glowing Aura Behind Hero -->
@@ -119,7 +121,6 @@
         </div>
 
         <!-- SECTION 1: QR GENERATOR WORKSPACE -->
-        <div id="generator" class="scroll-mt-24"></div>
         <section id="generatorSection" class="block scroll-mt-20">
             <div class="glowing-border-card p-5 md:p-6">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-7 items-center">
