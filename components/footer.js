@@ -2,91 +2,139 @@ class CustomFooter extends HTMLElement {
   connectedCallback() {
     const year = new Date().getFullYear();
     this.innerHTML = `
-      <footer class="mt-16 border-t border-indigo-100 bg-white/80">
-        <!-- Üst gradient çizgi -->
-        <div class="h-1 w-full"
-             style="background: linear-gradient(90deg, #5da8ff, #605dff 50%, #ad63f6);"></div>
+      <footer class="mt-16 border-t border-slate-800/90 bg-slate-950 text-slate-300 relative">
+        <!-- Luminous accent top border -->
+        <div class="h-[2px] w-full"
+             style="background: linear-gradient(90deg, #6366f1 0%, #a855f7 50%, #ec4899 100%); box-shadow: 0 0 12px rgba(99, 102, 241, 0.35);"></div>
 
-        <div class="container mx-auto max-w-6xl px-4 py-10 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <!-- Sol -->
-          <div>
-            <div class="flex items-center space-x-2 mb-3">
-              <img src="Logo.png" alt="Logo" style="width: 265px; height: auto;">
+        <div class="container mx-auto max-w-5xl px-4 py-10 sm:py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
+          <!-- Left Column (Logo & Description) -->
+          <div class="md:col-span-2">
+            <div class="footer-logo flex items-center mb-4">
+              <a href="index.html" class="inline-block transition-transform hover:scale-105" title="QR Kod Stüdyosu">
+                <img src="assets/images/Logo.png?v=2" alt="QR Kod Stüdyosu Logo" class="h-14 sm:h-16 w-auto" style="object-fit: contain;">
+              </a>
             </div>
-            <p class="text-sm text-slate-600 leading-relaxed">
-              URL’lerinizi saniyeler içinde şık QR Kodlarına dönüştürün. Tüm işlemler tarayıcınızda — veri gizliliğiniz bizde öncelik.
+            <p class="text-sm text-slate-400 leading-relaxed max-w-md">
+              URL, Wi-Fi, vCard, WhatsApp ve metinleriniz için yüksek kaliteli QR kodları oluşturun veya mevcut kodları kameranızla okuyun. %100 tarayıcı tabanlı, güvenli ve gizlilik odaklı.
             </p>
           </div>
 
-          <!-- Orta -->
-          <div class="md:mx-auto">
-            <h4 class="font-bold mb-3 text-slate-900">Hızlı Bağlantılar</h4>
-            <ul class="space-y-2 text-sm">
-              <li class="flex items-center gap-2">
-              <i data-feather="mail" class="w-4 h-4 text-indigo-500"></i>
-              <a href="mailto:destek@ornek.com" class="text-slate-600 hover:text-indigo-600">
-                İletişim
-              </a></li>
-              <li class="flex items-center gap-2">
-              <i data-feather="star" class="w-4 h-4 text-indigo-500"></i>
-              <a href="#features" class="text-slate-600 hover:text-indigo-600">
-                Özellikler
-              </a></li>
-              <li class="flex items-center gap-2">
-              <i data-feather="play-circle" class="w-4 h-4 text-indigo-500"></i>
-              <a href="#how" class="text-slate-600 hover:text-indigo-600">
-                Nasıl Çalışır?
-              </a></li>
-              <li class="flex items-center gap-2">
-              <i data-feather="help-circle" class="w-4 h-4 text-indigo-500"></i>
-              <a href="#faq" class="text-slate-600 hover:text-indigo-600">
-                SSS
-              </a></li>
+          <!-- Quick Links -->
+          <div>
+            <h4 class="font-bold mb-4 text-slate-300 text-xs uppercase tracking-wider">Hızlı Gezinti</h4>
+            <ul class="space-y-2.5 text-sm">
+              <li>
+                <a href="#generator" class="text-slate-400 hover:text-indigo-400 flex items-center gap-2 transition-colors py-0.5">
+                  <i data-feather="zap" class="w-4 h-4 text-indigo-400"></i>
+                  <span>QR Oluşturucu</span>
+                </a>
+              </li>
+              <li>
+                <a href="#features" class="text-slate-400 hover:text-indigo-400 flex items-center gap-2 transition-colors py-0.5">
+                  <i data-feather="star" class="w-4 h-4 text-indigo-400"></i>
+                  <span>Özellikler</span>
+                </a>
+              </li>
+              <li>
+                <a href="#how" class="text-slate-400 hover:text-indigo-400 flex items-center gap-2 transition-colors py-0.5">
+                  <i data-feather="play-circle" class="w-4 h-4 text-indigo-400"></i>
+                  <span>Nasıl Çalışır?</span>
+                </a>
+              </li>
+              <li>
+                <a href="#faq" class="text-slate-400 hover:text-indigo-400 flex items-center gap-2 transition-colors py-0.5">
+                  <i data-feather="help-circle" class="w-4 h-4 text-indigo-400"></i>
+                  <span>SSS</span>
+                </a>
+              </li>
             </ul>
           </div>
 
-          <!-- Sağ -->
+          <!-- Support & Legal -->
           <div>
-            <h4 class="font-bold mb-3 text-slate-900">Bize Ulaşın</h4>
-            <ul class="space-y-2 text-sm">
-              <li class="flex items-center gap-2">
-                <i data-feather="mail" class="w-4 h-4 text-indigo-500"></i>
-                <a href="mailto:destek@ornek.com" class="text-slate-600 hover:text-indigo-600">destek@ornek.com</a>
+            <h4 class="font-bold mb-4 text-slate-300 text-xs uppercase tracking-wider">Destek & Bilgi</h4>
+            <ul class="space-y-2.5 text-sm">
+              <li>
+                <button type="button" class="open-legal-modal text-slate-400 hover:text-indigo-400 flex items-center gap-2 transition-colors text-left py-0.5" data-modal="privacy">
+                  <i data-feather="shield" class="w-4 h-4 text-indigo-400"></i>
+                  <span>Gizlilik & KVKK</span>
+                </button>
               </li>
-              <li class="flex items-center gap-2">
-                <i data-feather="twitter" class="w-4 h-4 text-indigo-500"></i>
-                <a href="https://x.com/ornek" target="_blank" rel="noopener" class="text-slate-600 hover:text-indigo-600">X (Twitter)</a>
+              <li>
+                <button type="button" class="open-legal-modal text-slate-400 hover:text-indigo-400 flex items-center gap-2 transition-colors text-left py-0.5" data-modal="terms">
+                  <i data-feather="file-text" class="w-4 h-4 text-indigo-400"></i>
+                  <span>Kullanım Şartları</span>
+                </button>
               </li>
-              <li class="flex items-center gap-2">
-                <i data-feather="github" class="w-4 h-4 text-indigo-500"></i>
-                <a href="https://github.com/ornek" target="_blank" rel="noopener" class="text-slate-600 hover:text-indigo-600">GitHub</a>
+              <li>
+                <button type="button" class="open-legal-modal text-slate-400 hover:text-indigo-400 flex items-center gap-2 transition-colors text-left py-0.5" data-modal="contact">
+                  <i data-feather="mail" class="w-4 h-4 text-indigo-400"></i>
+                  <span>İletişim & Geri Bildirim</span>
+                </button>
               </li>
             </ul>
           </div>
         </div>
 
-        <div class="border-t text-slate-400">
-          <div class="container mx-auto max-w-6xl px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-3">
-            <p class="text-xs text-slate-500">© ${year} QR Code Oluşturucu. Tüm hakları saklıdır.</p>
+        <!-- Bottom Copyright Bar -->
+        <div class="border-t border-slate-900 text-slate-400 bg-slate-950/80">
+          <div class="container mx-auto max-w-5xl px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-3">
+            <p class="text-xs text-slate-500">
+              © ${year} QR Code Stüdyosu. Tüm hakları saklıdır.
+            </p>
             <div class="flex items-center gap-4 text-xs">
-              <a href="#kvkk" class="text-slate-500 hover:text-indigo-600 flex items-center gap-1">
-                <i data-feather="shield" class="w-4 h-4 text-indigo-500"></i> KVKK
-              </a>
-              <span class="text-slate-400">•</span>
-              <a href="#gizlilik" class="text-slate-500 hover:text-indigo-600 flex items-center gap-1">
-                <i data-feather="lock" class="w-4 h-4 text-indigo-500"></i> Gizlilik
-              </a>
-              <span class="text-slate-400">•</span>
-              <a href="#kullanim" class="text-slate-500 hover:text-indigo-600 flex items-center gap-1">
-                <i data-feather="file-text" class="w-4 h-4 text-indigo-500"></i> Kullanım Şartları
-              </a>
+              <button type="button" class="open-legal-modal text-slate-400 hover:text-indigo-400 flex items-center gap-1.5 transition" data-modal="privacy">
+                <i data-feather="shield" class="w-3.5 h-3.5 text-indigo-400"></i>
+                <span>KVKK</span>
+              </button>
+              <span class="text-slate-700">•</span>
+              <button type="button" class="open-legal-modal text-slate-400 hover:text-indigo-400 flex items-center gap-1.5 transition" data-modal="terms">
+                <i data-feather="file-text" class="w-3.5 h-3.5 text-indigo-400"></i>
+                <span>Şartlar</span>
+              </button>
+              <span class="text-slate-700">•</span>
+              <button type="button" class="open-legal-modal text-slate-400 hover:text-indigo-400 flex items-center gap-1.5 transition" data-modal="contact">
+                <i data-feather="mail" class="w-3.5 h-3.5 text-indigo-400"></i>
+                <span>İletişim</span>
+              </button>
             </div>
           </div>
         </div>
       </footer>
     `;
 
-    // Feather ikonlarını işle
+    // Modal listeners
+    this.querySelectorAll('.open-legal-modal').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const modalType = btn.getAttribute('data-modal');
+        if (window.openLegalModal) {
+          window.openLegalModal(modalType);
+        }
+      });
+    });
+
+    // Smooth scroll & mode switch for QR generator link
+    const genLink = this.querySelector('a[href="#generator"]');
+    if (genLink) {
+      genLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (typeof window.switchTopMode === 'function') {
+          window.switchTopMode('generator');
+        }
+        const target = document.getElementById('generator') || document.getElementById('generatorSection');
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        try {
+          history.pushState(null, '', '#generator');
+        } catch (_) { }
+      });
+    }
+
+    // Feather icons
     if (window.feather && typeof window.feather.replace === 'function') {
       window.feather.replace();
     }

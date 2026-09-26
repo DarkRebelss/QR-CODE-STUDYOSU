@@ -1,274 +1,1489 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" class="scroll-smooth dark">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code Oluşturucu</title>
-    <link rel="icon" href="favicon.ico">
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <title>QR Kod Stüdyosu & Tarayıcı | Profesyonel & Güvenli QR Oluşturucu</title>
+    <meta name="description"
+        content="URL, Wi-Fi, vCard, WhatsApp ve metinler için yüksek çözünürlüklü, logolu ve renkli QR kodları oluşturun. Vektörel SVG ve PNG indirin veya kamera ile QR kod tarayın.">
+    <link rel="icon" type="image/x-icon" href="assets/favicon/favicon.ico?v=3">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon/favicon-32x32.png?v=3">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon/favicon-16x16.png?v=3">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon/apple-touch-icon.png?v=3">
+    <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Modular CSS -->
+    <link rel="stylesheet" href="css/main.css?v=2.0">
+    <link rel="stylesheet" href="css/animations.css?v=2.0">
+    <link rel="stylesheet" href="css/components.css?v=2.0">
+    <link rel="stylesheet" href="css/toast.css?v=2.0">
+    <link rel="stylesheet" href="css/modal.css?v=2.0">
+    <link rel="stylesheet" href="css/scanner.css?v=2.0">
+
+    <!-- Tailwind Play CDN & DarkMode Class Config -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/feather-icons"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-    <!-- Fallback QR Code Library -->
     <script>
-        // Global function to load fallback QR Code library
-        window.loadQRCodeFallback = function () {
-            console.log('Loading fallback QR Code library...');
-            const fallbackScript = document.createElement('script');
-            fallbackScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
-            fallbackScript.onerror = function () {
-                console.error('Both QR Code libraries failed to load');
-                showToast('QR Kod kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edin.', 'error', 'Bağlantı Hatası');
-            };
-            document.head.appendChild(fallbackScript);
-        };
-
-        // Check if QRCode library is loaded
-        let qrCodeCheckInterval;
-        function checkQRCodeLibrary() {
-            if (typeof QRCode !== 'undefined') {
-                clearInterval(qrCodeCheckInterval);
-                console.log('QRCode library loaded successfully');
-                // Remove loading message if exists
-                const loadingMsg = document.querySelector('#qr-code-container .text-indigo-500');
-                if (loadingMsg) {
-                    loadingMsg.remove();
-                }
-                document.getElementById('qr-code-container').classList.remove('generating');
-            }
-        }
-
-        // Start checking for QRCode library
-        qrCodeCheckInterval = setInterval(checkQRCodeLibrary, 100);
-
-        // Also check immediately
-        document.addEventListener('DOMContentLoaded', function () {
-            setTimeout(checkQRCodeLibrary, 500);
-        });
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const pasteIcon = document.getElementById('paste-url-icon');
-            const urlInput = document.getElementById('url-input');
-
-            pasteIcon.addEventListener('click', async () => {
-                try {
-                    const text = await navigator.clipboard.readText();
-                    if (text.trim()) {
-                        urlInput.value = text.trim();
-                        showToast("Kopyalanan metin yapıştırıldı ✅", "success");
-                    } else {
-                        showToast("Panoda yapıştırılabilir bir metin bulunamadı", "warning");
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            200: '#c7d2fe',
+                            300: '#a5b4fc',
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            900: '#312e81',
+                        }
                     }
-                } catch (err) {
-                    showToast("Tarayıcı panoya erişim izni vermedi", "error", "İzin Hatası");
                 }
-            });
-        });
-    </script>
-    <style>
-        /* CSS değişkenini animasyon için tanımla */
-        @property --angle {
-            syntax: "<angle>";
-            inherits: false;
-            initial-value: 0deg;
-        }
-
-        /* Dönen renk animasyonu (sadece gradient hareket eder) */
-        @keyframes spin-angle {
-            to {
-                --angle: 360deg;
             }
         }
+    </script>
 
-        /* Kart */
-        .bg-white.rounded-xl.shadow-lg.overflow-hidden {
-            position: relative;
-            isolation: isolate;
-        }
+    <!-- QRCode.js Engine -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-        /* Sadece border alanında gradient — SÜREKLİ animasyonlu */
-        .bg-white.rounded-xl.shadow-lg.overflow-hidden::after {
-            --ring: 3px;
-            /* çerçeve kalınlığı */
-            content: "";
-            position: absolute;
-            inset: 0;
-            border-radius: 0.75rem;
-            /* rounded-xl */
-            background: conic-gradient(from var(--angle), #5da8ff, #605dff 50%, #ad63f6);
-            z-index: 0;
-            padding: var(--ring);
-            pointer-events: none;
+    <!-- jsQR Library for Camera & Image QR Scanning -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 
-            /* İç bölgeyi maskeyle boşalt → sadece çerçeve görünür */
-            -webkit-mask:
-                linear-gradient(#000 0 0) content-box,
-                linear-gradient(#000 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-
-            opacity: .9;
-
-            /* ⭐ Sürekli çalışan animasyon burada */
-            animation: spin-angle 4s linear infinite;
-        }
-    </style>
+    <!-- Feather Icons -->
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
 </head>
 
-<body class="">
-    <custom-navbar></custom-navbar>
+<body
+    class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
 
-    <main class="container mx-auto px-4 py-12 max-w-4xl">
-        <div class="text-center mb-12">
-            <h1 class="text-4xl md:text-5xl font-[800] mb-4" style="background: -webkit-linear-gradient(45deg, #605dff, #ad63f6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;">
-                QR CODE OLUŞTURUCU <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" fill="currentColor"
-                    class="bi bi-stars" viewBox="0 0 16 16" style="display: inline-block; color: #ad63f6;">
-                    <path
-                        d="M7.657 6.247c.11-.33.576-.33.686 0l.645 1.937a2.89 2.89 0 0 0 1.829 1.828l1.936.645c.33.11.33.576 0 .686l-1.937.645a2.89 2.89 0 0 0-1.828 1.829l-.645 1.936a.361.361 0 0 1-.686 0l-.645-1.937a2.89 2.89 0 0 0-1.828-1.828l-1.937-.645a.361.361 0 0 1 0-.686l1.937-.645a2.89 2.89 0 0 0 1.828-1.828zM3.794 1.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387A1.73 1.73 0 0 0 4.593 5.69l-.387 1.162a.217.217 0 0 1-.412 0L3.407 5.69A1.73 1.73 0 0 0 2.31 4.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387A1.73 1.73 0 0 0 3.407 2.31zM10.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.16 1.16 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.16 1.16 0 0 0-.732-.732L9.1 2.137a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732z" />
-                </svg>
+    <main class="flex-grow container mx-auto px-4 py-8 md:py-12 max-w-5xl relative">
+        <!-- Ambient Glowing Aura Behind Hero -->
+        <div
+            class="absolute -top-12 left-1/2 -translate-x-1/2 w-80 sm:w-[480px] h-48 bg-gradient-to-r from-indigo-500/15 via-purple-500/15 to-pink-500/15 blur-3xl rounded-full pointer-events-none">
+        </div>
+
+        <!-- Hero Header -->
+        <div class="relative text-center mb-8 md:mb-10">
+            <div
+                class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-indigo-950/60 text-indigo-300 border border-indigo-500/30 mb-3.5 shadow-[0_0_15px_rgba(99,102,241,0.15)]">
+                <span class="w-2 h-2 rounded-full bg-indigo-400 animate-ping"></span>
+                <span>%100 İstemci Taraflı • Ücretsiz & Gizlilik Korumalı</span>
+            </div>
+
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mb-3">
+                <span class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                    QR Kod Stüdyosu
+                </span>
+                <span class="text-white">& Tarayıcı</span>
             </h1>
-            <p class="text-lg max-w-2xl mx-auto" style="color: #4a516d">
-                Herhangi bir URL'yi anında güzel bir QR koduna dönüştürün. Kolayca paylaşın, indirin ve tarayın!
+
+            <p class="text-sm sm:text-base text-slate-400 max-w-xl mx-auto leading-relaxed">
+                URL, Wi-Fi, vCard ve WhatsApp için vektörel SVG, logolu ve renkli QR kodları oluşturun ya da kameranızla
+                QR kodları anında okuyun.
             </p>
+
+            <!-- Mode Selector Switcher Pills -->
+            <div
+                class="mt-6 inline-flex p-1.5 rounded-2xl bg-slate-900/90 backdrop-blur-md border border-slate-800 shadow-xl shadow-indigo-950/20">
+                <button type="button" id="tabModeGenerator"
+                    class="mode-tab-btn px-4 py-2 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-1.5 transition-all bg-indigo-600 text-white shadow-md">
+                    <i data-feather="zap" class="w-4 h-4"></i>
+                    <span>QR Kod Oluştur</span>
+                </button>
+                <button type="button" id="tabModeScanner"
+                    class="mode-tab-btn px-4 py-2 rounded-xl font-semibold text-xs sm:text-sm text-slate-400 hover:text-indigo-400 flex items-center gap-1.5 transition-all">
+                    <i data-feather="camera" class="w-4 h-4"></i>
+                    <span>QR Kod Tara</span>
+                </button>
+                <button type="button" id="tabModeHistory"
+                    class="mode-tab-btn px-4 py-2 rounded-xl font-semibold text-xs sm:text-sm text-slate-400 hover:text-indigo-400 flex items-center gap-1.5 transition-all">
+                    <i data-feather="clock" class="w-4 h-4"></i>
+                    <span>Geçmiş</span>
+                    <span id="historyBadgeCount"
+                        class="px-2 py-0.5 text-xs rounded-full bg-slate-800 text-slate-300 font-bold border border-slate-700">0</span>
+                </button>
+            </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-            <div class="p-6 md:p-8">
-                <div class="flex flex-col md:flex-row gap-8">
-                    <div class="flex-1">
-                        <div style="margin-bottom: 1rem;">
-                            <label for="url-input" class="block text-sm font-medium mb-2 url-text"
-                                style="color: #0c0e19; font-size: medium;">
-                                Dönüştürülecek URL'yi Giriniz
+        <!-- SECTION 1: QR GENERATOR WORKSPACE -->
+        <div id="generator" class="scroll-mt-24"></div>
+        <section id="generatorSection" class="block scroll-mt-20">
+            <div class="glowing-border-card p-5 md:p-6">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-7 items-center">
+
+                    <!-- Left Column: Input and Configuration (7 cols) -->
+                    <div class="lg:col-span-7 space-y-4">
+
+                        <!-- Content Type Selector Pills -->
+                        <div>
+                            <label
+                                class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+                                İçerik Türü Seçiniz
                             </label>
-                            <div class="relative">
-                                <input type="url" id="url-input" placeholder="https://ornek.com"
-                                    class="w-full px-4 py-3 pr-12 rounded-lg border border-indigo-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
-                                <i id="paste-url-icon" data-feather="link"
-                                    class="absolute right-3 top-3.5 text-indigo-400 cursor-pointer"></i>
+                            <div
+                                class="grid grid-cols-4 sm:grid-cols-7 gap-1.5 p-1 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                                <button type="button" data-qr-type="url"
+                                    class="qr-type-btn active flex flex-col items-center justify-center p-2 rounded-lg text-xs font-semibold transition-all bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm">
+                                    <i data-feather="globe" class="w-4 h-4 mb-1"></i>
+                                    <span>URL</span>
+                                </button>
+                                <button type="button" data-qr-type="text"
+                                    class="qr-type-btn flex flex-col items-center justify-center p-2 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all">
+                                    <i data-feather="file-text" class="w-4 h-4 mb-1"></i>
+                                    <span>Metin</span>
+                                </button>
+                                <button type="button" data-qr-type="wifi"
+                                    class="qr-type-btn flex flex-col items-center justify-center p-2 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all">
+                                    <i data-feather="wifi" class="w-4 h-4 mb-1"></i>
+                                    <span>Wi-Fi</span>
+                                </button>
+                                <button type="button" data-qr-type="whatsapp"
+                                    class="qr-type-btn flex flex-col items-center justify-center p-2 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all">
+                                    <i data-feather="message-circle" class="w-4 h-4 mb-1"></i>
+                                    <span>WhatsApp</span>
+                                </button>
+                                <button type="button" data-qr-type="email"
+                                    class="qr-type-btn flex flex-col items-center justify-center p-2 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all">
+                                    <i data-feather="mail" class="w-4 h-4 mb-1"></i>
+                                    <span>E-Posta</span>
+                                </button>
+                                <button type="button" data-qr-type="vcard"
+                                    class="qr-type-btn flex flex-col items-center justify-center p-2 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all">
+                                    <i data-feather="user" class="w-4 h-4 mb-1"></i>
+                                    <span>vCard</span>
+                                </button>
+                                <button type="button" data-qr-type="phone"
+                                    class="qr-type-btn flex flex-col items-center justify-center p-2 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all">
+                                    <i data-feather="phone" class="w-4 h-4 mb-1"></i>
+                                    <span>Telefon</span>
+                                </button>
                             </div>
                         </div>
 
-                        <div class="mb-6">
-                            <label class="block text-sm font-medium mb-2 url-text"
-                                style="color: #0c0e19; font-size: medium;">
-                                QR Kod Rengi
-                            </label>
-                            <!-- QR Kod Rengi -->
-                            <div class="color-grid" role="radiogroup" aria-label="QR Kod Rengi">
-                                <!-- Siyah -->
-                                <div class="color-item">
-                                    <input type="radio" id="color-default" name="qr-color" value="default"
-                                        class="sr-only" checked>
-                                    <label for="color-default" class="color-card" tabindex="0">
-                                        <span class="swatch" style="--swatch-bg:#111827"></span>
-                                        <span class="label-text">Siyah</span>
-                                    </label>
+                        <!-- DYNAMIC INPUT FORMS -->
+                        <div
+                            class="bg-slate-50/80 dark:bg-slate-900/60 p-3.5 sm:p-4 rounded-xl border border-slate-200/80 dark:border-slate-800">
+
+                            <!-- 1. URL FORM -->
+                            <div id="form-type-url" class="qr-input-form block space-y-2">
+                                <label for="url-input"
+                                    class="block text-xs font-bold text-slate-700 dark:text-slate-200">
+                                    Hedef URL / Web Sitesi
+                                </label>
+                                <div class="relative flex items-center">
+                                    <input type="text" id="url-input" placeholder="https://ornek.com veya ornek.com"
+                                        class="w-full px-3 py-2 pr-16 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-xs sm:text-sm">
+                                    <div class="absolute right-1.5 flex items-center gap-1">
+                                        <button type="button" id="paste-url-btn"
+                                            class="p-1 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition"
+                                            title="Panodan Yapıştır">
+                                            <i data-feather="clipboard" class="w-3.5 h-3.5"></i>
+                                        </button>
+                                        <button type="button" id="clear-url-btn"
+                                            class="p-1 text-slate-400 hover:text-rose-500 transition hidden"
+                                            title="Temizle">
+                                            <i data-feather="x" class="w-3.5 h-3.5"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">
+                                    İpucu: Protokol girmezseniz otomatik olarak <span
+                                        class="font-mono text-indigo-500 font-semibold">https://</span> eklenecektir.
+                                </p>
+                            </div>
+
+                            <!-- 2. TEXT FORM -->
+                            <div id="form-type-text" class="qr-input-form hidden space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <label for="text-input"
+                                        class="block text-xs font-bold text-slate-700 dark:text-slate-200">Düz Metin
+                                        veya Not</label>
+                                    <span id="text-char-count" class="text-xs font-mono text-slate-400">0
+                                        karakter</span>
+                                </div>
+                                <textarea id="text-input" rows="3"
+                                    placeholder="QR koda dönüştürmek istediğiniz metni yazınız..."
+                                    class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 outline-none text-xs sm:text-sm resize-none"></textarea>
+                            </div>
+
+                            <!-- 3. WI-FI FORM -->
+                            <div id="form-type-wifi" class="qr-input-form hidden space-y-2.5">
+                                <div>
+                                    <label for="wifi-ssid"
+                                        class="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1">Ağ Adı
+                                        (SSID)</label>
+                                    <input type="text" id="wifi-ssid" placeholder="Wi-Fi Ağ Adı"
+                                        class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs sm:text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                    <div>
+                                        <label for="wifi-password"
+                                            class="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1">Şifre</label>
+                                        <div class="relative flex items-center">
+                                            <input type="password" id="wifi-password" placeholder="Şifre giriniz"
+                                                class="w-full px-3 py-2 pr-9 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs sm:text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                                            <button type="button" id="wifi-toggle-pass"
+                                                class="absolute right-2 text-slate-400 hover:text-indigo-600 transition">
+                                                <i data-feather="eye" class="w-3.5 h-3.5"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label for="wifi-encryption"
+                                            class="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1">Güvenlik</label>
+                                        <select id="wifi-encryption"
+                                            class="w-full px-2.5 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs sm:text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                                            <option value="WPA" selected>WPA / WPA2 / WPA3</option>
+                                            <option value="WEP">WEP</option>
+                                            <option value="nopass">Şifresiz (Açık Ağ)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-1.5 pt-0.5">
+                                    <input type="checkbox" id="wifi-hidden"
+                                        class="w-3.5 h-3.5 rounded text-indigo-600 focus:ring-indigo-500">
+                                    <label for="wifi-hidden"
+                                        class="text-xs text-slate-600 dark:text-slate-400 cursor-pointer">Gizli ağ (SSID
+                                        yayınlanmıyor)</label>
+                                </div>
+                            </div>
+
+                            <!-- 4. WHATSAPP FORM -->
+                            <div id="form-type-whatsapp" class="qr-input-form hidden space-y-2.5">
+                                <label for="wa-phone"
+                                    class="block text-xs font-bold text-slate-700 dark:text-slate-200">WhatsApp
+                                    Numarası</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="wa-country" value="+90"
+                                        class="w-16 px-2 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs text-center font-mono">
+                                    <input type="tel" id="wa-phone" placeholder="5551234567"
+                                        class="flex-1 px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs sm:text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                                </div>
+                                <textarea id="wa-message" rows="2" placeholder="Hazır mesaj metni (opsiyonel)..."
+                                    class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs sm:text-sm outline-none focus:ring-2 focus:ring-indigo-500 resize-none"></textarea>
+                            </div>
+
+                            <!-- 5. EMAIL FORM -->
+                            <div id="form-type-email" class="qr-input-form hidden space-y-2.5">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                    <input type="email" id="email-to" placeholder="Alıcı e-posta"
+                                        class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs sm:text-sm outline-none">
+                                    <input type="text" id="email-subject" placeholder="Konu başlığı"
+                                        class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs sm:text-sm outline-none">
+                                </div>
+                                <textarea id="email-body" rows="2" placeholder="Mesaj içeriği..."
+                                    class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs sm:text-sm outline-none resize-none"></textarea>
+                            </div>
+
+                            <!-- 6. VCARD FORM -->
+                            <div id="form-type-vcard" class="qr-input-form hidden space-y-2">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <input type="text" id="vcard-fname" placeholder="Ad"
+                                        class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs outline-none">
+                                    <input type="text" id="vcard-lname" placeholder="Soyad"
+                                        class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs outline-none">
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <input type="tel" id="vcard-phone" placeholder="Telefon"
+                                        class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs outline-none">
+                                    <input type="email" id="vcard-email" placeholder="E-Posta"
+                                        class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs outline-none">
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <input type="text" id="vcard-company" placeholder="Şirket"
+                                        class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs outline-none">
+                                    <input type="text" id="vcard-title" placeholder="Unvan"
+                                        class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs outline-none">
+                                </div>
+                            </div>
+
+                            <!-- 7. PHONE / SMS FORM -->
+                            <div id="form-type-phone" class="qr-input-form hidden space-y-2.5">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                    <input type="tel" id="phone-number" placeholder="+90 555..."
+                                        class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                                    <select id="phone-action"
+                                        class="w-full px-2.5 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs sm:text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                                        <option value="call" selected>Doğrudan Arama</option>
+                                        <option value="sms">SMS Gönder</option>
+                                    </select>
+                                </div>
+                                <div id="sms-text-container" class="hidden">
+                                    <textarea id="sms-body" rows="2" placeholder="SMS mesajı..."
+                                        class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs sm:text-sm outline-none resize-none"></textarea>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- CUSTOMIZATION TOOLBAR WITH SUB-TABS -->
+                        <div class="space-y-2.5 pt-0.5">
+                            <!-- Sub-tabs bar: Renkler / Logo / Ayarlar -->
+                            <div
+                                class="flex items-center justify-between pb-2 border-b border-slate-200/80 dark:border-slate-800">
+                                <span
+                                    class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Tasarım
+                                    & Ayarlar</span>
+                                <div
+                                    class="inline-flex p-0.5 rounded-lg bg-slate-100 dark:bg-slate-900 text-xs font-semibold">
+                                    <button type="button" data-subtab="colors"
+                                        class="setting-subtab-btn active">Renkler</button>
+                                    <button type="button" data-subtab="logo" class="setting-subtab-btn">Logo &
+                                        İkon</button>
+                                    <button type="button" data-subtab="shape" class="setting-subtab-btn">Şekil &
+                                        Boyut</button>
+                                </div>
+                            </div>
+
+                            <!-- Panel 1: Colors (Active by default) -->
+                            <div id="subtab-panel-colors" class="setting-panel block space-y-2.5">
+                                <div>
+                                    <div class="color-grid" role="radiogroup" aria-label="QR Kod Rengi">
+                                        <div class="color-item">
+                                            <input type="radio" id="color-default" name="qr-color" value="default"
+                                                class="sr-only" checked>
+                                            <label for="color-default" class="color-card" tabindex="0">
+                                                <span class="swatch" style="--swatch-bg:#0f172a"></span>
+                                                <span>Siyah</span>
+                                            </label>
+                                        </div>
+                                        <div class="color-item">
+                                            <input type="radio" id="color-indigo" name="qr-color" value="indigo"
+                                                class="sr-only">
+                                            <label for="color-indigo" class="color-card" tabindex="0">
+                                                <span class="swatch"
+                                                    style="--swatch-bg:linear-gradient(135deg,#5da8ff,#605dff)"></span>
+                                                <span>İndigo</span>
+                                            </label>
+                                        </div>
+                                        <div class="color-item">
+                                            <input type="radio" id="color-purple" name="qr-color" value="purple"
+                                                class="sr-only">
+                                            <label for="color-purple" class="color-card" tabindex="0">
+                                                <span class="swatch"
+                                                    style="--swatch-bg:linear-gradient(135deg,#605dff,#ad63f6)"></span>
+                                                <span>Mor</span>
+                                            </label>
+                                        </div>
+                                        <div class="color-item">
+                                            <input type="radio" id="color-sunset" name="qr-color" value="sunset"
+                                                class="sr-only">
+                                            <label for="color-sunset" class="color-card" tabindex="0">
+                                                <span class="swatch"
+                                                    style="--swatch-bg:linear-gradient(135deg,#f97316,#ec4899)"></span>
+                                                <span>Gün Batımı</span>
+                                            </label>
+                                        </div>
+                                        <div class="color-item">
+                                            <input type="radio" id="color-emerald" name="qr-color" value="emerald"
+                                                class="sr-only">
+                                            <label for="color-emerald" class="color-card" tabindex="0">
+                                                <span class="swatch"
+                                                    style="--swatch-bg:linear-gradient(135deg,#10b981,#06b6d4)"></span>
+                                                <span>Zümrüt</span>
+                                            </label>
+                                        </div>
+                                        <div class="color-item">
+                                            <input type="radio" id="color-gold" name="qr-color" value="gold"
+                                                class="sr-only">
+                                            <label for="color-gold" class="color-card" tabindex="0">
+                                                <span class="swatch"
+                                                    style="--swatch-bg:linear-gradient(135deg,#eab308,#ef4444)"></span>
+                                                <span>Sarı/Kızıl</span>
+                                            </label>
+                                        </div>
+                                        <div class="color-item">
+                                            <input type="radio" id="color-maroon" name="qr-color" value="maroon"
+                                                class="sr-only">
+                                            <label for="color-maroon" class="color-card" tabindex="0">
+                                                <span class="swatch"
+                                                    style="--swatch-bg:linear-gradient(135deg,#b42e55,#7b1e3a)"></span>
+                                                <span>Bordo</span>
+                                            </label>
+                                        </div>
+                                        <div class="color-item">
+                                            <input type="radio" id="color-custom" name="qr-color" value="custom"
+                                                class="sr-only">
+                                            <label for="color-custom" class="color-card" tabindex="0">
+                                                <span class="swatch"
+                                                    style="--swatch-bg:linear-gradient(135deg,#ec4899,#8b5cf6,#06b6d4)"></span>
+                                                <span>Özel Renk</span>
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <!-- Mavi (indigo gradient) -->
-                                <div class="color-item">
-                                    <input type="radio" id="color-indigo" name="qr-color" value="indigo"
-                                        class="sr-only">
-                                    <label for="color-indigo" class="color-card" tabindex="0">
-                                        <span class="swatch"
-                                            style="--swatch-bg:linear-gradient(135deg,#5da8ff,#605dff)"></span>
-                                        <span class="label-text">Mavi</span>
-                                    </label>
-                                </div>
+                                <!-- Transparent Background Toggle Card (Styled with modern CSS) -->
+                                <label for="transparent-bg"
+                                    class="transparent-bg-toggle-card p-3 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-slate-700 cursor-pointer select-none group shadow-sm">
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        <div class="icon-box group-hover:scale-105 transition-transform">
+                                            <i data-feather="grid"></i>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <div
+                                                class="text-xs font-bold text-slate-200 group-hover:text-white transition-colors">
+                                                Şeffaf Arka Plan
+                                            </div>
+                                            <div class="text-[11px] text-slate-400 mt-0.5">
+                                                Arka planı saydam yapar • <b>PNG & SVG çıktılar için idealdir.</b>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="ui-toggle-switch ml-3">
+                                        <input type="checkbox" id="transparent-bg">
+                                        <div class="ui-toggle-slider"></div>
+                                    </div>
+                                </label>
 
-                                <!-- Mor -->
-                                <div class="color-item">
-                                    <input type="radio" id="color-purple" name="qr-color" value="purple"
-                                        class="sr-only">
-                                    <label for="color-purple" class="color-card" tabindex="0">
-                                        <span class="swatch"
-                                            style="--swatch-bg:linear-gradient(135deg,#605dff,#ad63f6)"></span>
-                                        <span class="label-text">Mor</span>
-                                    </label>
-                                </div>
+                                <!-- Custom Color Picker Row (With Custom Gradient Support) -->
+                                <div id="custom-color-controls"
+                                    class="hidden p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-3 shadow-md">
+                                    <!-- Header with Gradient Toggle -->
+                                    <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+                                        <div class="flex items-center gap-2">
+                                            <span
+                                                class="w-2 h-2 rounded-full bg-gradient-to-r from-indigo-500 to-pink-500"></span>
+                                            <span class="text-xs font-bold text-slate-200">Özel Renk & Gradyan
+                                                Ayarları</span>
+                                        </div>
+                                        <label for="custom-gradient-toggle"
+                                            class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-300 select-none">
+                                            <span class="text-[11px] text-slate-400">Renk Geçişi</span>
+                                            <div class="ui-toggle-switch">
+                                                <input type="checkbox" id="custom-gradient-toggle" checked>
+                                                <div class="ui-toggle-slider"></div>
+                                            </div>
+                                        </label>
+                                    </div>
 
-                                <!-- Bordo -->
-                                <div class="color-item">
-                                    <input type="radio" id="color-maroon" name="qr-color" value="maroon"
-                                        class="sr-only">
-                                    <label for="color-maroon" class="color-card" tabindex="0">
-                                        <span class="swatch"
-                                            style="--swatch-bg:linear-gradient(135deg,#b42e55,#7b1e3a)"></span>
-                                        <span class="label-text">Bordo</span>
-                                    </label>
+                                    <!-- Inputs Grid -->
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+                                        <!-- Start / Primary Foreground Color -->
+                                        <div class="space-y-1">
+                                            <label class="block text-slate-400 text-xs font-semibold" id="label-fg1">Ön
+                                                Plan Başlangıç</label>
+                                            <div
+                                                class="flex items-center gap-1.5 p-1.5 rounded-lg bg-slate-950 border border-slate-800 focus-within:border-indigo-500 transition">
+                                                <input type="color" id="custom-fg-color" value="#4f46e5"
+                                                    class="w-6 h-6 rounded cursor-pointer border-0 p-0 bg-transparent flex-shrink-0">
+                                                <input type="text" id="custom-fg-hex" value="#4F46E5"
+                                                    class="w-full bg-transparent text-slate-200 text-xs font-mono uppercase outline-none px-1">
+                                            </div>
+                                        </div>
+
+                                        <!-- End / Secondary Foreground Color (for Gradient) -->
+                                        <div class="space-y-1" id="custom-fg2-container">
+                                            <label class="block text-slate-400 text-xs font-semibold">Ön Plan Bitiş
+                                                (Geçiş)</label>
+                                            <div
+                                                class="flex items-center gap-1.5 p-1.5 rounded-lg bg-slate-950 border border-slate-800 focus-within:border-indigo-500 transition">
+                                                <input type="color" id="custom-fg2-color" value="#ec4899"
+                                                    class="w-6 h-6 rounded cursor-pointer border-0 p-0 bg-transparent flex-shrink-0">
+                                                <input type="text" id="custom-fg2-hex" value="#EC4899"
+                                                    class="w-full bg-transparent text-slate-200 text-xs font-mono uppercase outline-none px-1">
+                                            </div>
+                                        </div>
+
+                                        <!-- Background Color -->
+                                        <div class="space-y-1" id="custom-bg-container">
+                                            <label class="block text-slate-400 text-xs font-semibold" id="label-bg">Arka
+                                                Plan Rengi</label>
+                                            <div
+                                                class="flex items-center gap-1.5 p-1.5 rounded-lg bg-slate-950 border border-slate-800 focus-within:border-indigo-500 transition">
+                                                <input type="color" id="custom-bg-color" value="#ffffff"
+                                                    class="w-6 h-6 rounded cursor-pointer border-0 p-0 bg-transparent flex-shrink-0">
+                                                <input type="text" id="custom-bg-hex" value="#FFFFFF"
+                                                    class="w-full bg-transparent text-slate-200 text-xs font-mono uppercase outline-none px-1">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Live Gradient Preview Bar -->
+                                    <div id="custom-gradient-preview-wrap"
+                                        class="flex items-center gap-2 pt-1 text-[11px] text-slate-400">
+                                        <span class="font-medium">Geçiş Önizleme:</span>
+                                        <div id="custom-gradient-preview-bar"
+                                            class="flex-1 h-3 rounded-full border border-slate-700/80 shadow-inner"
+                                            style="background: linear-gradient(135deg, #4f46e5, #ec4899);"></div>
+                                    </div>
                                 </div>
+                            </div>
+
+                            <!-- Panel 2: Logo -->
+                            <div id="subtab-panel-logo" class="setting-panel hidden space-y-2.5">
+                                <div class="flex items-center gap-2">
+                                    <label for="logo-upload"
+                                        class="cursor-pointer py-2 px-3 rounded-lg border border-dashed border-indigo-300 dark:border-indigo-700 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 text-xs font-semibold text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5 transition">
+                                        <i data-feather="upload" class="w-4 h-4"></i>
+                                        <span>Logo Yükle</span>
+                                    </label>
+                                    <input type="file" id="logo-upload" accept="image/*" class="sr-only">
+
+                                    <select id="preset-icon-select"
+                                        class="flex-1 py-2 px-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium outline-none">
+                                        <option value="none">Logo Yok</option>
+                                        <option value="web">Web İkonu</option>
+                                        <option value="whatsapp">WhatsApp</option>
+                                        <option value="wifi">Wi-Fi</option>
+                                        <option value="instagram">Instagram</option>
+                                        <option value="youtube">YouTube</option>
+                                        <option value="mail">E-Posta</option>
+                                        <option value="star">Yıldız</option>
+                                    </select>
+                                    <button type="button" id="remove-logo-btn"
+                                        class="p-2 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950 rounded-lg text-xs hidden"
+                                        title="Logoyu Kaldır">
+                                        <i data-feather="trash" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Logo eklendiğinde QR kodun
+                                    merkezine koruyucu rozet yerleştirilir.</p>
+                            </div>
+
+                            <!-- Panel 3: Shape & Settings -->
+                            <div id="subtab-panel-shape" class="setting-panel hidden space-y-2.5 text-xs">
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                                    <div>
+                                        <label
+                                            class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Nokta
+                                            Stili</label>
+                                        <div class="flex gap-1.5">
+                                            <button type="button" id="shape-square-btn"
+                                                class="shape-btn active flex-1 py-2 px-2.5 rounded-lg border border-indigo-500 bg-indigo-50 dark:bg-indigo-950/60 font-semibold text-indigo-600 text-xs">Kare</button>
+                                            <button type="button" id="shape-rounded-btn"
+                                                class="shape-btn flex-1 py-2 px-2.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-semibold text-xs">Yuvarlak</button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label for="qr-size-select"
+                                            class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Çözünürlük</label>
+                                        <select id="qr-size-select"
+                                            class="w-full py-2 px-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium">
+                                            <option value="256">256 px (Standart)</option>
+                                            <option value="512" selected>512 px (HD)</option>
+                                            <option value="1024">1024 px (Ultra HD)</option>
+                                            <option value="2048">2048 px (4K Baskı)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="qr-margin-select"
+                                            class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Kenarlık</label>
+                                        <select id="qr-margin-select"
+                                            class="w-full py-2 px-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium">
+                                            <option value="1">Dar (1 Modül)</option>
+                                            <option value="2" selected>Standart (2 Modül)</option>
+                                            <option value="4">Geniş (4 Modül)</option>
+                                            <option value="0">Boşluksuz (0)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <select id="qr-error-level" class="sr-only">
+                                    <option value="H" selected>High (%30)</option>
+                                </select>
                             </div>
                         </div>
 
-                        <button id="generate-btn"
-                            class="w-full text-white font-bold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center space-x-2">
-                            <i data-feather="zap"></i>
-                            <span>QR Kod Oluştur</span>
+                        <!-- Generate Button -->
+                        <button id="generate-btn" type="button"
+                            class="btn-gradient w-full text-white font-bold py-3 px-5 rounded-xl transition flex items-center justify-center space-x-2 text-sm sm:text-base shadow">
+                            <i data-feather="zap" class="w-4 h-4"></i>
+                            <span id="generate-btn-text">QR Kodunu Oluştur</span>
                         </button>
-                        <div id="download-options" class="hidden mt-4">
-                            <button id="download-png"
-                                class="bg-green-500 font-bold hover:bg-green-600 text-white py-3 px-4 rounded-lg transition flex items-center justify-center min-w-[200px]">
-                                <i data-feather="download"></i>
-                                <span>PNG İndir</span>
-                            </button>
-                        </div>
+
                     </div>
 
-                    <div class="flex-1 flex flex-col items-center justify-center">
+                    <!-- Right Column: Live Preview & Multi-format Export (5 cols) -->
+                    <div class="lg:col-span-5 flex flex-col items-center justify-center space-y-3.5 self-center">
+
+                        <div class="w-full flex items-center justify-between px-1">
+                            <div class="flex items-center gap-2">
+                                <span class="preview-status-dot"></span>
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-300">Canlı Önizleme</span>
+                            </div>
+                            <span id="preview-info-badge" class="preview-dimension-badge">512×512 px</span>
+                        </div>
+
+                        <!-- QR Preview Box -->
                         <div id="qr-code-container"
-                            class="shimmer-grid p-6 rounded-lg border border-gray-200 mb-4 w-80 h-80 flex items-center justify-center">
-                            <div class="text-center text-gray-500">
-                                <i data-feather="qr-code" class="w-16 h-16 mx-auto mb-2"></i>
-                                <p style="color: #0c0e19;">QR Kodunuz Burada Görünecek</p>
+                            class="shimmer-grid p-4 rounded-xl flex items-center justify-center relative">
+                            <div class="text-center text-slate-400 p-3">
+                                <i data-feather="qr-code" class="w-10 h-10 mx-auto mb-1.5 opacity-50"></i>
+                                <p class="text-xs font-semibold">QR Kodunuz Burada Görünecek</p>
+                            </div>
+                        </div>
+
+                        <!-- Export Action Buttons -->
+                        <div id="download-options" class="w-full space-y-2.5">
+                            <!-- Primary Download Buttons -->
+                            <div class="grid grid-cols-2 gap-2.5 w-full">
+                                <button id="download-png" type="button" class="preview-btn-primary preview-btn-emerald">
+                                    <div class="preview-btn-icon-wrap preview-btn-icon-emerald">
+                                        <i data-feather="download" class="w-4 h-4"></i>
+                                    </div>
+                                    <div class="preview-btn-text">
+                                        <span class="preview-btn-label">PNG İndir</span>
+                                        <span class="preview-btn-desc">Yüksek Çözünürlük</span>
+                                    </div>
+                                </button>
+                                <button id="download-svg" type="button" class="preview-btn-primary preview-btn-indigo" title="Vektörel SVG Çıktısı">
+                                    <div class="preview-btn-icon-wrap preview-btn-icon-indigo">
+                                        <i data-feather="layers" class="w-4 h-4"></i>
+                                    </div>
+                                    <div class="preview-btn-text">
+                                        <span class="preview-btn-label">SVG İndir</span>
+                                        <span class="preview-btn-desc">Vektörel Format</span>
+                                    </div>
+                                </button>
+                            </div>
+
+                            <!-- Secondary Action Buttons -->
+                            <div class="grid grid-cols-3 gap-2 w-full">
+                                <button id="copy-qr-btn" type="button" class="preview-btn-secondary" title="Panoya Resim Olarak Kopyala">
+                                    <i data-feather="copy" class="w-3.5 h-3.5"></i>
+                                    <span>Kopyala</span>
+                                </button>
+                                <button id="download-jpeg" type="button" class="preview-btn-secondary">
+                                    <i data-feather="image" class="w-3.5 h-3.5"></i>
+                                    <span>JPEG</span>
+                                </button>
+                                <button id="print-qr-btn" type="button" class="preview-btn-secondary">
+                                    <i data-feather="printer" class="w-3.5 h-3.5"></i>
+                                    <span>Yazdır</span>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: QR SCANNER & READER (CAMERA + IMAGE UPLOAD) -->
+        <section id="scannerSection" class="hidden">
+            <div
+                class="glowing-border-card p-6 md:p-8 max-w-xl mx-auto bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-2xl shadow-2xl">
+                <div class="text-center mb-6">
+                    <div
+                        class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 mb-3 shadow-inner">
+                        <i data-feather="maximize" class="w-6 h-6"></i>
+                    </div>
+                    <h2 class="text-xl sm:text-2xl font-bold mb-1 text-white">QR Kod Tarayıcı & Çözücü</h2>
+                    <p class="text-xs sm:text-sm text-slate-400">
+                        Görsel yükleyin, panodan yapıştırın veya kameranızla canlı tarayın.
+                    </p>
+                </div>
+
+                <!-- Scanner Mode Tabs -->
+                <div class="flex justify-center mb-6">
+                    <div class="inline-flex p-1 rounded-xl bg-slate-950/80 border border-slate-800 shadow-inner">
+                        <button type="button" id="scanTabUpload"
+                            class="px-4 py-2 rounded-lg text-xs font-bold transition bg-indigo-600 text-white shadow-md flex items-center gap-2">
+                            <i data-feather="upload-cloud" class="w-4 h-4"></i>
+                            <span>Görsel Yükle</span>
+                        </button>
+                        <button type="button" id="scanTabCamera"
+                            class="px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-indigo-400 transition flex items-center gap-2">
+                            <i data-feather="video" class="w-4 h-4"></i>
+                            <span>Kamera ile Canlı Tara</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- View 1: Image Dropzone & Upload -->
+                <div id="scannerUploadView" class="block">
+                    <div id="scannerDropzone"
+                        class="dropzone p-8 text-center cursor-pointer rounded-2xl border-2 border-dashed border-slate-700 hover:border-indigo-500/80 bg-slate-950/50 hover:bg-indigo-950/20 transition-all duration-300 group">
+                        <input type="file" id="scannerFileInput" accept="image/*" class="sr-only">
+                        <div
+                            class="w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center mx-auto mb-3.5 group-hover:scale-110 transition-transform">
+                            <i data-feather="image" class="w-7 h-7"></i>
+                        </div>
+                        <p class="text-sm sm:text-base font-bold text-slate-200 mb-1">
+                            QR görselini sürükleyip bırakın veya seçin
+                        </p>
+                        <p class="text-xs text-slate-400 mb-4">
+                            Herhangi bir sayfadan kopyalayıp <kbd
+                                class="px-2 py-0.5 rounded bg-slate-800 text-indigo-400 font-mono text-[11px] border border-slate-700 font-semibold shadow-sm">Ctrl+V</kbd>
+                            ile anında yapıştırabilirsiniz
+                        </p>
+                        <button type="button"
+                            class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-sm font-bold shadow-lg shadow-indigo-600/30 transition">
+                            Dosya Seç
+                        </button>
+                    </div>
+                </div>
+
+                <!-- View 2: Live Camera Viewport -->
+                <div id="scannerCameraView" class="hidden flex flex-col items-center">
+                    <div class="scanner-viewport shadow-2xl mb-4 border border-slate-700 rounded-2xl overflow-hidden">
+                        <video id="scannerVideo" class="scanner-video" playsinline></video>
+                        <div class="scanner-overlay">
+                            <div class="scanner-box">
+                                <div class="scanner-laser"></div>
                             </div>
                         </div>
                     </div>
+                    <div class="flex items-center gap-3">
+                        <button type="button" id="startCameraBtn"
+                            class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition">
+                            <i data-feather="play" class="w-4 h-4"></i>
+                            <span>Kamerayı Başlat</span>
+                        </button>
+                        <button type="button" id="stopCameraBtn"
+                            class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-lg shadow-rose-600/30 transition hidden">
+                            <i data-feather="square" class="w-4 h-4"></i>
+                            <span>Durdur</span>
+                        </button>
+                    </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <div class="text-indigo-600 mb-4">
-                    <i data-feather="zap" class="w-8 h-8" style="color: #605dff;"></i>
+                <!-- Scan Results Card -->
+                <div id="scannerResultCard"
+                    class="hidden mt-6 p-5 rounded-2xl bg-slate-950/90 border border-indigo-500/30 shadow-xl">
+                    <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-800">
+                        <span
+                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-950/80 text-emerald-400 border border-emerald-800/80 shadow-sm">
+                            <i data-feather="check-circle" class="w-3.5 h-3.5"></i>
+                            <span id="scanResultType">Bağlantı Tespit Edildi</span>
+                        </span>
+                        <span class="text-xs font-mono text-slate-400">Çözümlendi</span>
+                    </div>
+
+                    <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800 font-mono text-xs sm:text-sm break-all text-slate-100 mb-4 select-all shadow-inner"
+                        id="scanResultText">
+                        https://example.com
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 text-xs">
+                        <a id="scanResultOpenLink" href="#" target="_blank" rel="noopener"
+                            class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold flex items-center gap-1.5 shadow-md shadow-indigo-600/25 transition">
+                            <i data-feather="external-link" class="w-3.5 h-3.5"></i>
+                            <span>Aç</span>
+                        </a>
+                        <button type="button" id="scanResultCopyBtn"
+                            class="px-4 py-2 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold flex items-center gap-1.5 transition">
+                            <i data-feather="copy" class="w-3.5 h-3.5"></i>
+                            <span>Kopyala</span>
+                        </button>
+                        <button type="button" id="scanResultEditBtn"
+                            class="px-4 py-2 rounded-lg border border-indigo-500/40 hover:border-indigo-400 bg-indigo-950/40 text-indigo-300 font-bold flex items-center gap-1.5 transition">
+                            <i data-feather="edit" class="w-3.5 h-3.5"></i>
+                            <span>Oluşturucuda Aç</span>
+                        </button>
+                    </div>
                 </div>
-                <h3 style="color: #605dff;" class="font-bold text-lg mb-2 text-indigo-900">Anında Oluşturma</h3>
-                <p style="color: #4a516d;">Yıldırım hızında jeneratörümüzle saniyeler içinde QR kodları oluşturun.</p>
+
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <div class="text-indigo-600 mb-4">
-                    <i data-feather="download" class="w-8 h-8" style="color: #605dff;"></i>
+        </section>
+
+        <!-- SECTION 3: QR HISTORY SECTION -->
+        <section id="historySection" class="hidden">
+            <div
+                class="glowing-border-card p-6 md:p-8 bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-2xl shadow-2xl">
+                <div class="flex justify-between items-center mb-6 pb-3 border-b border-slate-800">
+                    <div>
+                        <h2 class="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+                            <i data-feather="clock" class="w-5 h-5 text-indigo-400"></i>
+                            <span>İndirilen QR Kod Geçmişi</span>
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-0.5">İndirdiğiniz QR kodlar tarayıcınızda yerel ve gizli
+                            olarak saklanır.</p>
+                    </div>
+                    <button type="button" id="clearHistoryBtn"
+                        class="px-3 py-1.5 rounded-xl border border-rose-900/60 text-rose-400 hover:bg-rose-950/40 hover:border-rose-700 text-xs font-semibold flex items-center gap-1.5 transition">
+                        <i data-feather="trash-2" class="w-3.5 h-3.5"></i>
+                        <span>Geçmişi Temizle</span>
+                    </button>
                 </div>
-                <h3 style="color: #605dff;" class="font-bold text-lg mb-2 text-indigo-900">PNG Format</h3>
-                <p style="color: #4a516d;">QR kodlarınızı PNG formatında yüksek kalitede indirin.</p>
+
+                <div id="historyGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <!-- Dynamic history cards inserted via script.js -->
+                </div>
+
+                <div id="historyEmptyState" class="text-center py-12 text-slate-400">
+                    <div
+                        class="w-14 h-14 rounded-2xl bg-slate-800/80 border border-slate-700 flex items-center justify-center mx-auto mb-3 text-slate-500">
+                        <i data-feather="clock" class="w-7 h-7"></i>
+                    </div>
+                    <p class="text-sm font-semibold text-slate-300 mb-1">Henüz indirilmiş bir QR kod bulunmuyor</p>
+                    <p class="text-xs text-slate-500">Oluşturduğunuz QR kodları indirdiğinizde otomatik olarak burada
+                        listelenecektir.</p>
+                </div>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <div class="text-indigo-600 mb-4">
-                    <i data-feather="lock" class="w-8 h-8" style="color: #605dff;"></i>
+        </section>
+
+        <!-- SECTION 4: FEATURES GRID (#features) -->
+        <section id="features" class="mt-16 md:mt-24 scroll-mt-20">
+            <!-- Section Header -->
+            <div class="text-center mb-10 md:mb-14">
+                <div
+                    class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-indigo-950/60 text-indigo-300 border border-indigo-800/60 mb-3 shadow-[0_0_15px_rgba(99,102,241,0.15)]">
+                    <i data-feather="star" class="w-3.5 h-3.5 text-indigo-400"></i>
+                    <span>Eksiksiz & Güçlü Standartlar</span>
                 </div>
-                <h3 style="color: #605dff;" class="font-bold text-lg mb-2 text-indigo-900">Gizlilik Odaklı</h3>
-                <p style="color: #4a516d;">Tüm işlemler tarayıcınızda gerçekleşir - hiçbir veri sunuculara gönderilmez.
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight mb-3 text-white">
+                    Öne Çıkan <span
+                        class="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Özellikler</span>
+                </h2>
+                <p class="text-slate-400 text-xs sm:text-sm max-w-lg mx-auto leading-relaxed">
+                    Vektörel baskı desteğinden çift yönlü tarayıcıya kadar modern ve profesyonel bir QR deneyimi için
+                    gereken tüm araçlar.
                 </p>
             </div>
-        </div>
+
+            <!-- 6-Card Responsive Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <!-- CARD 1: Vektörel SVG & 4K Baskı -->
+                <div
+                    class="group relative p-6 sm:p-7 rounded-2xl bg-slate-900/70 backdrop-blur-md border border-slate-800/90 hover:border-indigo-500/50 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-5">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500/20 to-indigo-600/10 text-indigo-400 border border-indigo-500/30 flex items-center justify-center group-hover:scale-110 group-hover:bg-indigo-500 group-hover:text-white transition-all shadow-md shadow-indigo-500/10">
+                                <i data-feather="layers" class="w-6 h-6"></i>
+                            </div>
+                            <span
+                                class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-indigo-950/80 text-indigo-300 border border-indigo-800/70 font-mono">2048px
+                                & SVG</span>
+                        </div>
+                        <h3
+                            class="font-bold text-base sm:text-lg mb-2 text-white group-hover:text-indigo-300 transition-colors">
+                            Vektörel SVG & 4K Baskı</h3>
+                        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed mb-5">
+                            Pikselleşme olmadan sonsuz ölçeklenebilen SVG vektör çıktısı veya afiş, kartvizit ve
+                            tabelalar için 2048px ultra keskin raster görsel indirme.
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-slate-800/80 space-y-2">
+                        <div class="flex items-center gap-2 text-xs text-slate-300">
+                            <i data-feather="check" class="w-3.5 h-3.5 text-indigo-400 flex-shrink-0"></i>
+                            <span>Sonsuz ölçeklenebilir SVG vektör</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-slate-300">
+                            <i data-feather="check" class="w-3.5 h-3.5 text-indigo-400 flex-shrink-0"></i>
+                            <span>2048x2048px ultra yüksek baskı çözünürlüğü</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-slate-300">
+                            <i data-feather="check" class="w-3.5 h-3.5 text-indigo-400 flex-shrink-0"></i>
+                            <span>PNG ve JPEG çoklu format desteği</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 2: Canlı Kamera & Görsel Okuyucu -->
+                <div
+                    class="group relative p-6 sm:p-7 rounded-2xl bg-slate-900/70 backdrop-blur-md border border-slate-800/90 hover:border-emerald-500/50 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-emerald-500/10 transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-5">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 text-emerald-400 border border-emerald-500/30 flex items-center justify-center group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all shadow-md shadow-emerald-500/10">
+                                <i data-feather="camera" class="w-6 h-6"></i>
+                            </div>
+                            <span
+                                class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-950/80 text-emerald-300 border border-emerald-800/70 font-mono">Çift
+                                Yönlü</span>
+                        </div>
+                        <h3
+                            class="font-bold text-base sm:text-lg mb-2 text-white group-hover:text-emerald-300 transition-colors">
+                            Canlı Kamera & Görsel Okuyucu</h3>
+                        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed mb-5">
+                            Web kameranızı kullanarak anlık görüntü akışıyla QR kod tarayın veya cihazınızdaki
+                            fotoğrafları sürükleyip bırakarak saniyeler içinde okutun.
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-slate-800/80 space-y-2">
+                        <div class="flex items-center gap-2 text-xs text-slate-300">
+                            <i data-feather="check" class="w-3.5 h-3.5 text-emerald-400 flex-shrink-0"></i>
+                            <span>Gerçek zamanlı kamera tarayıcısı</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-slate-300">
+                            <i data-feather="check" class="w-3.5 h-3.5 text-emerald-400 flex-shrink-0"></i>
+                            <span>Sürükle-bırak görsel analizi</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-slate-300">
+                            <i data-feather="check" class="w-3.5 h-3.5 text-emerald-400 flex-shrink-0"></i>
+                            <span>Wi-Fi, URL & metin akıllı aksiyonları</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 3: Logo & İkon Entegrasyonu -->
+                <div
+                    class="group relative p-6 sm:p-7 rounded-2xl bg-slate-900/70 backdrop-blur-md border border-slate-800/90 hover:border-purple-500/50 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-5">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500/20 to-purple-600/10 text-purple-400 border border-purple-500/30 flex items-center justify-center group-hover:scale-110 group-hover:bg-purple-500 group-hover:text-white transition-all shadow-md shadow-purple-500/10">
+                                <i data-feather="image" class="w-6 h-6"></i>
+                            </div>
+                            <span
+                                class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-purple-950/80 text-purple-300 border border-purple-800/70 font-mono">%30
+                                Kurtarma</span>
+                        </div>
+                        <h3
+                            class="font-bold text-base sm:text-lg mb-2 text-white group-hover:text-purple-300 transition-colors">
+                            Logo & İkon Entegrasyonu</h3>
+                        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed mb-5">
+                            Kendi kurumsal logonuzu QR kodun merkezine ekleyin. Seviye-H (%30) gelişmiş hata düzeltme
+                            algoritması sayesinde okunabilirlikten asla ödün vermez.
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-slate-800/80 space-y-2">
+                        <div class="flex items-center gap-2 text-xs text-slate-300">
+                            <i data-feather="check" class="w-3.5 h-3.5 text-purple-400 flex-shrink-0"></i>
+                            <span>Özel PNG/SVG logo yükleme desteği</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-slate-300">
+                            <i data-feather="check" class="w-3.5 h-3.5 text-purple-400 flex-shrink-0"></i>
+                            <span>Sosyal medya hazır ikon paketi</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-slate-300">
+                            <i data-feather="check" class="w-3.5 h-3.5 text-purple-400 flex-shrink-0"></i>
+                            <span>Otomatik korumalı merkez rozeti</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 4: Özel Degrade & Şeffaf Zemin -->
+                <div
+                    class="group relative p-6 sm:p-7 rounded-2xl bg-slate-900/70 backdrop-blur-md border border-slate-800/90 hover:border-pink-500/50 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-pink-500/10 transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-5">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-500/20 to-pink-600/10 text-pink-400 border border-pink-500/30 flex items-center justify-center group-hover:scale-110 group-hover:bg-pink-500 group-hover:text-white transition-all shadow-md shadow-pink-500/10">
+                                <i data-feather="droplet" class="w-6 h-6"></i>
+                            </div>
+                            <span
+                                class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-pink-950/80 text-pink-300 border border-pink-800/70 font-mono">Çift
+                                Renk</span>
+                        </div>
+                        <h3
+                            class="font-bold text-base sm:text-lg mb-2 text-white group-hover:text-pink-300 transition-colors">
+                            Özel Degrade & Şeffaf Zemin</h3>
+                        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed mb-5">
+                            Sıradan siyah-beyaz kodların ötesine geçin. İki renkli canlı doğrusal gradyanlar, yuvarlak
+                            modül desenleri ve kusursuz şeffaf transparan zemin oluşturun.
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-slate-800/80 space-y-2">
+                        <div class="flex items-center gap-2 text-xs text-slate-300">
+                            <i data-feather="check" class="w-3.5 h-3.5 text-pink-400 flex-shrink-0"></i>
+                            <span>2 renkli canlı doğrusal degrade</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-slate-300">
+                            <i data-feather="check" class="w-3.5 h-3.5 text-pink-400 flex-shrink-0"></i>
+                            <span>Şeffaf (transparan) arka plan modu</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-slate-300">
+                            <i data-feather="check" class="w-3.5 h-3.5 text-pink-400 flex-shrink-0"></i>
+                            <span>Kare veya yuvarlak modül desen seçeneği</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 5: İndirilenler Geçmişi (LocalStorage) -->
+                <div
+                    class="group relative p-6 sm:p-7 rounded-2xl bg-slate-900/70 backdrop-blur-md border border-slate-800/90 hover:border-amber-500/50 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-5">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-600/10 text-amber-400 border border-amber-500/30 flex items-center justify-center group-hover:scale-110 group-hover:bg-amber-500 group-hover:text-white transition-all shadow-md shadow-amber-500/10">
+                                <i data-feather="clock" class="w-6 h-6"></i>
+                            </div>
+                            <span
+                                class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-950/80 text-amber-300 border border-amber-800/70 font-mono">Otomatik</span>
+                        </div>
+                        <h3
+                            class="font-bold text-base sm:text-lg mb-2 text-white group-hover:text-amber-300 transition-colors">
+                            İndirilenler Geçmişi</h3>
+                        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed mb-5">
+                            İndirdiğiniz QR kodlar tarayıcınızın yerel belleğine otomatik kaydedilir. Kodunuzu kaybetme
+                            endişesi olmadan dilediğiniz an tek tıkla tekrar indirin.
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-slate-800/80 space-y-2">
+                        <div class="flex items-center gap-2 text-xs text-slate-300">
+                            <i data-feather="check" class="w-3.5 h-3.5 text-amber-400 flex-shrink-0"></i>
+                            <span>Sadece indirilen kodların akıllı kaydı</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-slate-300">
+                            <i data-feather="check" class="w-3.5 h-3.5 text-amber-400 flex-shrink-0"></i>
+                            <span>Tek tıkla anında tekrar indirme & önizleme</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-slate-300">
+                            <i data-feather="check" class="w-3.5 h-3.5 text-amber-400 flex-shrink-0"></i>
+                            <span>Kullanıcı kontrollü tek tıkla temizleme</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 6: Sıfır Sunucu & %100 Gizlilik -->
+                <div
+                    class="group relative p-6 sm:p-7 rounded-2xl bg-slate-900/70 backdrop-blur-md border border-slate-800/90 hover:border-cyan-500/50 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-5">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500/20 to-cyan-600/10 text-cyan-400 border border-cyan-500/30 flex items-center justify-center group-hover:scale-110 group-hover:bg-cyan-500 group-hover:text-white transition-all shadow-md shadow-cyan-500/10">
+                                <i data-feather="shield" class="w-6 h-6"></i>
+                            </div>
+                            <span
+                                class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-cyan-950/80 text-cyan-300 border border-cyan-800/70 font-mono">Sıfır
+                                Log</span>
+                        </div>
+                        <h3
+                            class="font-bold text-base sm:text-lg mb-2 text-white group-hover:text-cyan-300 transition-colors">
+                            %100 İstemci Gizliliği</h3>
+                        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed mb-5">
+                            Tüm matematiksel kodlama ve görüntü işleme doğrudan cihazınızda yürütülür. Wi-Fi
+                            şifreleriniz, kişisel bilgileriniz hiçbir harici sunucuya iletilmez.
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-slate-800/80 space-y-2">
+                        <div class="flex items-center gap-2 text-xs text-slate-300">
+                            <i data-feather="check" class="w-3.5 h-3.5 text-cyan-400 flex-shrink-0"></i>
+                            <span>Tamamen istemci taraflı (Client-side) çalışma</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-slate-300">
+                            <i data-feather="check" class="w-3.5 h-3.5 text-cyan-400 flex-shrink-0"></i>
+                            <span>Sıfır sunucu kaydı ve veri takibi</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-slate-300">
+                            <i data-feather="check" class="w-3.5 h-3.5 text-cyan-400 flex-shrink-0"></i>
+                            <span>Çevrimdışı ve sınırsız kullanım özgürlüğü</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Features Trust Bar -->
+            <div
+                class="mt-8 p-4 rounded-2xl bg-slate-900/50 border border-slate-800/80 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <div class="flex items-center justify-center gap-2.5 text-slate-300 text-xs sm:text-sm font-medium">
+                    <i data-feather="zap" class="w-4 h-4 text-indigo-400"></i>
+                    <span>Milisaniyede Üretim</span>
+                </div>
+                <div class="flex items-center justify-center gap-2.5 text-slate-300 text-xs sm:text-sm font-medium">
+                    <i data-feather="check-circle" class="w-4 h-4 text-emerald-400"></i>
+                    <span>%100 Cihaz Uyumluluğu</span>
+                </div>
+                <div class="flex items-center justify-center gap-2.5 text-slate-300 text-xs sm:text-sm font-medium">
+                    <i data-feather="download" class="w-4 h-4 text-purple-400"></i>
+                    <span>Sınırsız & Ücretsiz</span>
+                </div>
+                <div class="flex items-center justify-center gap-2.5 text-slate-300 text-xs sm:text-sm font-medium">
+                    <i data-feather="lock" class="w-4 h-4 text-cyan-400"></i>
+                    <span>KVKK & Gizlilik Uyumlu</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: HOW IT WORKS (#how) -->
+        <section id="how" class="mt-16 md:mt-24 scroll-mt-20">
+            <!-- Section Header -->
+            <div class="text-center mb-10 md:mb-12">
+                <div
+                    class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-purple-950/60 text-purple-300 border border-purple-800/60 mb-3 shadow-[0_0_15px_rgba(168,85,247,0.15)]">
+                    <i data-feather="zap" class="w-3.5 h-3.5 text-purple-400"></i>
+                    <span>3 Basit Adımda Profesyonel Çözüm</span>
+                </div>
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight mb-2.5 text-white">
+                    Nasıl <span
+                        class="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Çalışır?</span>
+                </h2>
+                <p class="text-slate-400 text-xs sm:text-sm max-w-lg mx-auto leading-relaxed">
+                    Saniyeler içinde yüksek kaliteli, logolu ve vektörel QR kodları oluşturup indirmek için izlemeniz
+                    gereken sezgisel adımlar.
+                </p>
+            </div>
+
+            <!-- Steps Container with Connecting Line -->
+            <div class="relative">
+                <!-- Desktop Connecting Gradient Line -->
+                <div
+                    class="hidden md:block absolute top-1/2 left-12 right-12 h-0.5 -translate-y-12 bg-gradient-to-r from-indigo-500/30 via-purple-500/30 to-pink-500/30 pointer-events-none z-0">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+
+                    <!-- STEP 1 -->
+                    <div
+                        class="group relative p-6 sm:p-7 rounded-2xl bg-slate-900/70 backdrop-blur-md border border-slate-800/90 hover:border-indigo-500/50 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-300 flex flex-col justify-between">
+                        <div>
+                            <!-- Header & Step Number -->
+                            <div class="flex items-center justify-between mb-5">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 text-white flex items-center justify-center font-black text-base shadow-lg shadow-indigo-500/25 group-hover:scale-105 transition-transform">
+                                    <i data-feather="edit-3" class="w-5 h-5"></i>
+                                </div>
+                                <span
+                                    class="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-indigo-950/80 text-indigo-300 border border-indigo-800/60">ADIM
+                                    01</span>
+                            </div>
+
+                            <h3
+                                class="text-base sm:text-lg font-bold text-white mb-2 group-hover:text-indigo-300 transition-colors">
+                                İçeriğinizi Belirleyin
+                            </h3>
+                            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed mb-5">
+                                Web sitesi URL'si, Wi-Fi ağı, WhatsApp sohbeti, vCard kartvizit veya metin
+                                formatlarından birini seçerek bilgilerinizi girin.
+                            </p>
+                        </div>
+
+                        <!-- Micro Feature Preview Tags with Feather Icons -->
+                        <div class="pt-4 border-t border-slate-800/80">
+                            <div class="flex flex-wrap gap-2">
+                                <span
+                                    class="inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-lg bg-slate-800/80 text-slate-300 border border-slate-700/60 shadow-sm">
+                                    <i data-feather="link" class="w-3.5 h-3.5 text-indigo-400"></i>
+                                    <span>URL</span>
+                                </span>
+                                <span
+                                    class="inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-lg bg-slate-800/80 text-slate-300 border border-slate-700/60 shadow-sm">
+                                    <i data-feather="wifi" class="w-3.5 h-3.5 text-indigo-400"></i>
+                                    <span>Wi-Fi</span>
+                                </span>
+                                <span
+                                    class="inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-lg bg-slate-800/80 text-slate-300 border border-slate-700/60 shadow-sm">
+                                    <i data-feather="message-circle" class="w-3.5 h-3.5 text-indigo-400"></i>
+                                    <span>WhatsApp</span>
+                                </span>
+                                <span
+                                    class="inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-lg bg-slate-800/80 text-slate-300 border border-slate-700/60 shadow-sm">
+                                    <i data-feather="user" class="w-3.5 h-3.5 text-indigo-400"></i>
+                                    <span>vCard</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2 -->
+                    <div
+                        class="group relative p-6 sm:p-7 rounded-2xl bg-slate-900/70 backdrop-blur-md border border-slate-800/90 hover:border-purple-500/50 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-300 flex flex-col justify-between">
+                        <div>
+                            <!-- Header & Step Number -->
+                            <div class="flex items-center justify-between mb-5">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 text-white flex items-center justify-center font-black text-base shadow-lg shadow-purple-500/25 group-hover:scale-105 transition-transform">
+                                    <i data-feather="sliders" class="w-5 h-5"></i>
+                                </div>
+                                <span
+                                    class="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-purple-950/80 text-purple-300 border border-purple-800/60">ADIM
+                                    02</span>
+                            </div>
+
+                            <h3
+                                class="text-base sm:text-lg font-bold text-white mb-2 group-hover:text-purple-300 transition-colors">
+                                Tasarımı Kişiselleştirin
+                            </h3>
+                            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed mb-5">
+                                Markanıza uygun özel degrade renkler seçin, nokta/kare desenini ayarlayın, merkeze kendi
+                                logonuzu ekleyin veya şeffaf arka planı aktifleştirin.
+                            </p>
+                        </div>
+
+                        <!-- Micro Feature Preview Tags with Feather Icons -->
+                        <div class="pt-4 border-t border-slate-800/80">
+                            <div class="flex flex-wrap gap-2">
+                                <span
+                                    class="inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-lg bg-slate-800/80 text-slate-300 border border-slate-700/60 shadow-sm">
+                                    <i data-feather="droplet" class="w-3.5 h-3.5 text-purple-400"></i>
+                                    <span>Özel Degrade</span>
+                                </span>
+                                <span
+                                    class="inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-lg bg-slate-800/80 text-slate-300 border border-slate-700/60 shadow-sm">
+                                    <i data-feather="image" class="w-3.5 h-3.5 text-purple-400"></i>
+                                    <span>Logo Ekle</span>
+                                </span>
+                                <span
+                                    class="inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-lg bg-slate-800/80 text-slate-300 border border-slate-700/60 shadow-sm">
+                                    <i data-feather="grid" class="w-3.5 h-3.5 text-purple-400"></i>
+                                    <span>Desen Ayarı</span>
+                                </span>
+                                <span
+                                    class="inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-lg bg-slate-800/80 text-slate-300 border border-slate-700/60 shadow-sm">
+                                    <i data-feather="disc" class="w-3.5 h-3.5 text-purple-400"></i>
+                                    <span>Şeffaf Zemin</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3 -->
+                    <div
+                        class="group relative p-6 sm:p-7 rounded-2xl bg-slate-900/70 backdrop-blur-md border border-slate-800/90 hover:border-pink-500/50 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-pink-500/10 transition-all duration-300 flex flex-col justify-between">
+                        <div>
+                            <!-- Header & Step Number -->
+                            <div class="flex items-center justify-between mb-5">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-500 to-pink-600 text-white flex items-center justify-center font-black text-base shadow-lg shadow-pink-500/25 group-hover:scale-105 transition-transform">
+                                    <i data-feather="download" class="w-5 h-5"></i>
+                                </div>
+                                <span
+                                    class="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-pink-950/80 text-pink-300 border border-pink-800/60">ADIM
+                                    03</span>
+                            </div>
+
+                            <h3
+                                class="text-base sm:text-lg font-bold text-white mb-2 group-hover:text-pink-300 transition-colors">
+                                İndirin & Paylaşın
+                            </h3>
+                            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed mb-5">
+                                Sonsuz ölçeklenebilir vektörel SVG, yüksek çözünürlüklü PNG veya JPEG olarak tek tıkla
+                                indirin. İndirilen kodlar geçmişinize güvenle kaydedilir.
+                            </p>
+                        </div>
+
+                        <!-- Micro Feature Preview Tags with Feather Icons -->
+                        <div class="pt-4 border-t border-slate-800/80">
+                            <div class="flex flex-wrap gap-2">
+                                <span
+                                    class="inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-lg bg-slate-800/80 text-slate-300 border border-slate-700/60 shadow-sm">
+                                    <i data-feather="layers" class="w-3.5 h-3.5 text-pink-400"></i>
+                                    <span>Vektör SVG</span>
+                                </span>
+                                <span
+                                    class="inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-lg bg-slate-800/80 text-slate-300 border border-slate-700/60 shadow-sm">
+                                    <i data-feather="download" class="w-3.5 h-3.5 text-pink-400"></i>
+                                    <span>HD PNG / JPG</span>
+                                </span>
+                                <span
+                                    class="inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-lg bg-slate-800/80 text-slate-300 border border-slate-700/60 shadow-sm">
+                                    <i data-feather="clock" class="w-3.5 h-3.5 text-pink-400"></i>
+                                    <span>İndirme Geçmişi</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Bottom Interactive Banner -->
+            <div
+                class="mt-7 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-indigo-950/40 via-purple-950/30 to-slate-900/60 border border-indigo-900/40 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-3 text-left">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-indigo-900/60 text-indigo-400 flex items-center justify-center border border-indigo-700/40 flex-shrink-0">
+                        <i data-feather="shield" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs sm:text-sm font-bold text-white">Sıfır Sunucu Gecikmesi & Tam Gizlilik</h4>
+                        <p class="text-[11px] sm:text-xs text-slate-400">Tüm kod oluşturma işlemleri doğrudan
+                            tarayıcınızda milisaniyeler içinde tamamlanır.</p>
+                    </div>
+                </div>
+                <a href="#generator"
+                    class="w-full sm:w-auto px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md shadow-indigo-600/25 transition-all text-center flex-shrink-0 flex items-center justify-center gap-1.5">
+                    <span>Hemen QR Oluştur</span>
+                    <i data-feather="arrow-up-right" class="w-3.5 h-3.5"></i>
+                </a>
+            </div>
+        </section>
+
+        <!-- SECTION 6: FAQ ACCORDION (#faq) -->
+        <section id="faq" class="mt-14 md:mt-16 max-w-2xl mx-auto">
+            <div class="text-center mb-8">
+                <div
+                    class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-950/50 text-indigo-300 border border-indigo-800/60 mb-2.5">
+                    <i data-feather="help-circle" class="w-3.5 h-3.5 text-indigo-400"></i>
+                    <span>Merak Edilenler</span>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2 text-white">Sıkça Sorulan Sorular
+                </h2>
+                <p class="text-slate-400 text-xs sm:text-sm">Merak edilen teknik detaylar ve net cevapları.</p>
+            </div>
+
+            <div class="space-y-3" id="faqAccordion">
+                <div
+                    class="faq-item border border-slate-800/90 rounded-2xl bg-slate-900/70 backdrop-blur-md overflow-hidden hover:border-slate-700/90 transition-all">
+                    <button type="button"
+                        class="faq-toggle w-full p-4 text-left font-bold text-sm text-slate-200 flex justify-between items-center transition hover:text-indigo-400">
+                        <span>Oluşturulan QR kodların süresi dolar mı?</span>
+                        <i data-feather="chevron-down"
+                            class="faq-icon w-4 h-4 text-slate-400 transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-collapse">
+                        <div
+                            class="faq-content px-4 pb-4 text-xs sm:text-sm text-slate-400 leading-relaxed border-t border-slate-800/60 pt-3">
+                            Hayır. Üretilen tüm QR kodlar "Statik QR Kod" standartlarındadır; veriler kod matrisine
+                            doğrudan kodlandığı için ömür boyu çalışır ve süresi dolmaz.
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="faq-item border border-slate-800/90 rounded-2xl bg-slate-900/70 backdrop-blur-md overflow-hidden hover:border-slate-700/90 transition-all">
+                    <button type="button"
+                        class="faq-toggle w-full p-4 text-left font-bold text-sm text-slate-200 flex justify-between items-center transition hover:text-indigo-400">
+                        <span>Logo eklemek taranabilirliği bozar mı?</span>
+                        <i data-feather="chevron-down"
+                            class="faq-icon w-4 h-4 text-slate-400 transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-collapse">
+                        <div
+                            class="faq-content px-4 pb-4 text-xs sm:text-sm text-slate-400 leading-relaxed border-t border-slate-800/60 pt-3">
+                            Hayır. En yüksek hata düzeltme seviyesi (High %30) kullanıldığı için merkezde logo olsa bile
+                            okuyucular kodu %100 doğrulukla ve anında çözer.
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="faq-item border border-slate-800/90 rounded-2xl bg-slate-900/70 backdrop-blur-md overflow-hidden hover:border-slate-700/90 transition-all">
+                    <button type="button"
+                        class="faq-toggle w-full p-4 text-left font-bold text-sm text-slate-200 flex justify-between items-center transition hover:text-indigo-400">
+                        <span>SVG ve PNG arasındaki fark nedir?</span>
+                        <i data-feather="chevron-down"
+                            class="faq-icon w-4 h-4 text-slate-400 transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-collapse">
+                        <div
+                            class="faq-content px-4 pb-4 text-xs sm:text-sm text-slate-400 leading-relaxed border-t border-slate-800/60 pt-3">
+                            SVG vektörel bir formattır; tabela, ambalaj ve dev afiş baskılarında ne kadar büyütülürse
+                            büyütülsün asla bozulmaz. PNG ise web sayfaları ve sosyal medya paylaşımları için idealdir.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
 
+    <!-- Custom Web Component Footer -->
     <custom-footer></custom-footer>
 
-    <!-- Toast Container -->
+    <!-- LEGAL & CONTACT MODALS -->
+    <!-- Privacy Modal -->
+    <div id="modal-privacy" class="modal-backdrop">
+        <div
+            class="modal-dialog p-6 max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl text-slate-200">
+            <div class="flex justify-between items-center pb-3 mb-3 border-b border-slate-800">
+                <h3 class="font-bold text-base flex items-center gap-2 text-white">
+                    <i data-feather="shield" class="w-4 h-4 text-indigo-400"></i>
+                    <span>Gizlilik ve KVKK Politikası</span>
+                </h3>
+                <button type="button"
+                    class="close-modal-btn p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition">
+                    <i data-feather="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <div class="space-y-3 text-xs sm:text-sm text-slate-300 leading-relaxed">
+                <p><strong>QR Kod Stüdyosu</strong> olarak kullanıcılarımızın gizliliğine en üst düzeyde önem veriyoruz.
+                </p>
+                <h4 class="font-bold text-white text-xs uppercase tracking-wider">1. Sıfır Veri Depolama</h4>
+                <p>Oluşturduğunuz veya taradığınız hiçbir veri sunucularımıza gitmez. Tüm algoritmalar doğrudan
+                    tarayıcınızda istemci taraflı çalışır.</p>
+                <h4 class="font-bold text-white text-xs uppercase tracking-wider">2. Yerel Depolama (LocalStorage)</h4>
+                <p>Geçmiş yalnızca sizin cihazınızda saklanır ve dilediğiniz zaman tek tıkla tamamen temizlenebilir.</p>
+            </div>
+            <div class="mt-6 pt-3 border-t border-slate-800 flex justify-end">
+                <button type="button"
+                    class="close-modal-btn px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/30 transition">Kapat</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms Modal -->
+    <div id="modal-terms" class="modal-backdrop">
+        <div
+            class="modal-dialog p-6 max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl text-slate-200">
+            <div class="flex justify-between items-center pb-3 mb-3 border-b border-slate-800">
+                <h3 class="font-bold text-base flex items-center gap-2 text-white">
+                    <i data-feather="file-text" class="w-4 h-4 text-indigo-400"></i>
+                    <span>Kullanım Şartları</span>
+                </h3>
+                <button type="button"
+                    class="close-modal-btn p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition">
+                    <i data-feather="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <div class="space-y-3 text-xs sm:text-sm text-slate-300 leading-relaxed">
+                <p>Uygulama kişisel ve ticari amaçlarla tamamen ücretsiz olarak kullanılabilir.</p>
+                <p>Oluşturulan QR kodların yönlendirdiği içeriklerin yasal sorumluluğu ve doğruluğu kullanıcıya aittir.
+                </p>
+            </div>
+            <div class="mt-6 pt-3 border-t border-slate-800 flex justify-end">
+                <button type="button"
+                    class="close-modal-btn px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/30 transition">Kabul
+                    Ediyorum</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Modal -->
+    <div id="modal-contact" class="modal-backdrop">
+        <div
+            class="modal-dialog p-6 max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl text-slate-200">
+            <div class="flex justify-between items-center pb-3 mb-3 border-b border-slate-800">
+                <h3 class="font-bold text-base flex items-center gap-2 text-white">
+                    <i data-feather="mail" class="w-4 h-4 text-indigo-400"></i>
+                    <span>İletişim & Geri Bildirim</span>
+                </h3>
+                <button type="button"
+                    class="close-modal-btn p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition">
+                    <i data-feather="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <form id="contactForm" class="space-y-3 text-xs sm:text-sm">
+                <div>
+                    <label for="contact-name" class="block font-bold mb-1.5 text-slate-300">Adınız</label>
+                    <input type="text" id="contact-name" required placeholder="Adınız Soyadınız"
+                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-800 text-white placeholder-slate-500 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                </div>
+                <div>
+                    <label for="contact-email" class="block font-bold mb-1.5 text-slate-300">E-Posta</label>
+                    <input type="email" id="contact-email" required placeholder="adiniz@ornek.com"
+                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-800 text-white placeholder-slate-500 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                </div>
+                <div>
+                    <label for="contact-message" class="block font-bold mb-1.5 text-slate-300">Mesajınız</label>
+                    <textarea id="contact-message" rows="3" required placeholder="Görüş ve önerileriniz..."
+                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-800 text-white placeholder-slate-500 outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none transition"></textarea>
+                </div>
+                <div class="flex justify-end gap-2.5 pt-2">
+                    <button type="button"
+                        class="close-modal-btn px-4 py-2 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 font-semibold transition">Vazgeç</button>
+                    <button type="submit"
+                        class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold shadow-md shadow-indigo-600/30 transition">Gönder</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
     <div class="toast-container" id="toast-container"></div>
 
-    <script src="components/navbar.js"></script>
-    <script src="components/footer.js"></script>
-    <script src="script.js"></script>
-    <script>
-        feather.replace();
-    </script>
+    <!-- Modular Scripts -->
+    <script src="components/footer.js?v=2.0"></script>
+    <script src="js/state.js?v=2.0"></script>
+    <script src="js/toast.js?v=2.0"></script>
+    <script src="js/navigation.js?v=2.0"></script>
+    <script src="js/customization.js?v=2.0"></script>
+    <script src="js/generator.js?v=2.0"></script>
+    <script src="js/export.js?v=2.0"></script>
+    <script src="js/scanner.js?v=2.0"></script>
+    <script src="js/history.js?v=2.0"></script>
+    <script src="js/faq.js?v=2.0"></script>
+    <script src="js/modals.js?v=2.0"></script>
+    <script src="js/app.js?v=2.0"></script>
 </body>
 
 </html>

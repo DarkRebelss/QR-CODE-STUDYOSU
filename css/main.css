@@ -1,0 +1,158 @@
+/* Google Fonts: Plus Jakarta Sans & JetBrains Mono */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --bg-body: #080c15;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --card-bg: rgba(15, 23, 42, 0.95);
+    --card-border: rgba(51, 65, 85, 0.6);
+    --primary-grad: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+}
+
+html.dark {
+    --bg-body: #080c15;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --card-bg: rgba(15, 23, 42, 0.95);
+    --card-border: rgba(51, 65, 85, 0.6);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    font-size: 15.5px;
+    background-color: #080c15;
+    color-scheme: dark;
+}
+
+html,
+body,
+button,
+input,
+optgroup,
+select,
+textarea {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+body {
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    position: relative;
+    z-index: 0;
+    overflow-x: hidden;
+    line-height: 1.5;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-sans);
+    letter-spacing: -0.025em;
+}
+
+code,
+kbd,
+samp,
+pre,
+.font-mono {
+    font-family: var(--font-mono) !important;
+}
+
+/* Ambient Lighting & Refined Grid Background */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+        /* Arkadaki Işıklandırma (Ambient Glows) */
+        radial-gradient(circle at 16% 14%, rgba(99, 102, 241, 0.22) 0%, transparent 45%),
+        radial-gradient(circle at 84% 24%, rgba(217, 70, 239, 0.18) 0%, transparent 45%),
+        radial-gradient(circle at 50% 80%, rgba(59, 130, 246, 0.13) 0%, transparent 50%),
+        /* Dengeli & Zarif Grid Çizgileri (Gözü yormayan, kararında belirginlik) */
+        linear-gradient(to right, rgba(99, 102, 241, 0.09) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(99, 102, 241, 0.09) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+}
+
+/* Footer Logo Styling - Scaled, Crisp & Proportional */
+.footer-logo {
+    display: inline-flex;
+    align-items: center;
+}
+
+.footer-logo img {
+    height: 70px;
+    max-height: 70px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+    transition: filter 0.25s ease, transform 0.25s ease;
+}
+
+.footer-logo:hover img {
+    filter: drop-shadow(0 4px 18px rgba(236, 72, 153, 0.35));
+}
+
+@media (max-width: 640px) {
+    .footer-logo img {
+        height: 46px;
+        max-height: 50px;
+    }
+}
+
+@media (max-width: 767px) {
+    .mobile-menu:not(.hidden) {
+        display: block !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .mobile-menu {
+        display: none !important;
+    }
+}
+
+/* Print Stylesheet */
+@media print {
+    body {
+        background: white !important;
+        color: black !important;
+    }
+
+    body::before,
+    custom-footer,
+    #download-options,
+    #generate-btn,
+    .no-print {
+        display: none !important;
+    }
+
+    #qr-code-container {
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        margin: auto !important;
+        page-break-inside: avoid;
+    }
+}
